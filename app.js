@@ -723,6 +723,11 @@ if (file) {
     });
   }
 
+$('profileBack').addEventListener('click', () => {
+  $('userProfilePage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+});
+  
   $('loginOpen').addEventListener('click', async () => {
     await syncUser();
     if (user) {
