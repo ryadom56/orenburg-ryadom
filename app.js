@@ -69,7 +69,11 @@ async function toggleFavorite(id) {
     const q = $('search').value.trim().toLowerCase();
     const cat = $('category').value;
     const sort = $('sort').value;
-    let rows = listings.filter(x => (!cat || x.category === cat) && (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q)));
+    let rows = listings.filter(x =>
+  (!showingFavorites || favorites.has(String(x.id))) &&
+  (!cat || x.category === cat) &&
+  (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q))
+);
     if (sort === 'cheap') rows.sort((a,b) => a.price-b.price);
     else if (sort === 'expensive') rows.sort((a,b) => b.price-a.price);
     else rows.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
