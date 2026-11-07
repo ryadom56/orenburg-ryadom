@@ -765,7 +765,6 @@ if (file) {
 });
   
   await syncUser();
-
   if (!user) {
     alert('Войди в аккаунт, чтобы открыть избранное');
     return;
