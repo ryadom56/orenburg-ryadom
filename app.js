@@ -5,14 +5,14 @@
   let user = null, signup = false, listings = [];
 
   $('year').textContent = new Date().getFullYear();
-  const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
-  if (c === '&') return '&';
-  if (c === '<') return '<';
-  if (c === '>') return '>';
-  if (c === '"') return '"';
-  return '&#39;';
-});
+ const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&': '&',
+  '<': '<',
+  '>': '>',
+  '"': '"',
+  "'": '''
+}[c]));
   const open = id => $(id).classList.add('open');
   const close = id => $(id).classList.remove('open');
 
