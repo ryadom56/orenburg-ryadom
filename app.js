@@ -157,6 +157,109 @@ console.error('Ошибка загрузки профиля:', profileError);
 
     open('profileModal');
 
+    const editButton = document.getElementById('editProfileOpen');
+
+editButton.addEventListener('click', () => {
+  let editModal = document.getElementById('editProfileModal');
+
+  if (!editModal) {
+    editModal = document.createElement('div');
+    editModal.id = 'editProfileModal';
+    editModal.className = 'modal';
+    document.body.appendChild(editModal);
+  }
+
+  editModal.innerHTML = `
+    <form class="dialog" id="editProfileForm" style="max-width:500px">
+      <button type="button" class="x" id="closeEditProfile">×</button>
+      <h2>Редактирование профиля</h2>
+
+      <label>Имя или псевдоним
+        <input id="profileName" maxlength="50"
+          value="${esc(profileData?.display_name || '')}"
+          placeholder="Как тебя называть">
+      </label>
+
+      <label>Телефон
+        <input id="profilePhone" type="tel"
+          value="${esc(profileData?.phone || '')}"
+          placeholder="+7...">
+      </label>
+
+      <label>Telegram
+        <input id="profileTelegram"
+          value="${esc(profileData?.telegram || '')}"
+          placeholder="@username">
+      </label>
+
+      <label>WhatsApp
+        <input id="profileWhatsapp"
+          value="${esc(profileData?.whatsapp || '')}"
+          placeholder="Номер телефона">
+      </label>
+
+      <label>VK
+        <input id="profileVk"
+          value="${esc(profileData?.vk || '')}"
+          placeholder="Ссылка на страницу">
+      </label>
+
+      <label>О себе
+        <textarea id="profileAbout" rows="4"
+          placeholder="Расскажи о себе">${esc(profileData?.about || '')}</textarea>
+      </label>
+
+      <button type="submit" class="btn full">Сохранить изменения</button>
+      <p id="profileEditMessage" class="message"></p>
+    </form>`;
+
+  open('editProfileModal');
+
+  document.getElementById('closeEditProfile').addEventListener('click', () => {
+    close('editProfileModal');
+  });
+
+  editModal.addEventListener('click', e => {
+    if (e.target === editModal) close('editProfileModal');
+  });
+
+  document.getElementById('editProfileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const message = document.getElementById('profileEditMessage');
+    const saveButton = e.target.querySelector('button[type="submit"]');
+
+    saveButton.disabled = true;
+    message.textContent = 'Сохраняем...';
+
+    const updates = {
+      display_name: document.getElementById('profileName').value.trim(),
+      phone: document.getElementById('profilePhone').value.trim(),
+      telegram: document.getElementById('profileTelegram').value.trim(),
+      whatsapp: document.getElementById('profileWhatsapp').value.trim(),
+      vk: document.getElementById('profileVk').value.trim(),
+      about: document.getElementById('profileAbout').value.trim(),
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await db
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
+
+    saveButton.disabled = false;
+
+    if (error) {
+      message.textContent = 'Ошибка: ' + error.message;
+      return;
+    }
+
+    close('editProfileModal');
+    close('profileModal');
+    await openProfile();
+  });
+});
+
     const list = $('myListings');
     list.innerHTML = '<p>Загружаем объявления…</p>';
 
