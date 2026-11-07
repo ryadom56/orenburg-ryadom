@@ -52,6 +52,8 @@
     if (error) { $('status').textContent = 'Не удалось загрузить объявления: ' + error.message; return; }
     listings = data || [];
     render();
+  }
+
 async function syncUser() {
 
   if (!db) {
