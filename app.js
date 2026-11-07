@@ -1350,13 +1350,6 @@ async function startConversation(listing) {
   }
 }
 
-      ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
-
-$('sellerProfileOpen').addEventListener('click', () => {
-  close('detailModal');
-  openSellerProfile(x.user_id);
-});
-
     const writeSellerButton = $('writeSeller');
 
 if (writeSellerButton) {
