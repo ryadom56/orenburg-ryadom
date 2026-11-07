@@ -2,7 +2,7 @@
   const $ = id => document.getElementById(id);
   const clientReady = () => window.supabase && window.SUPABASE_URL && window.SUPABASE_PUBLISHABLE_KEY && !window.SUPABASE_URL.includes('ВСТАВЬ') && !window.SUPABASE_PUBLISHABLE_KEY.includes('ВСТАВЬ');
   const db = clientReady() ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY) : null;
-  let user = null, signup = false, listings = [], favorites = new Set();
+  let user = null, signup = false, listings = [], favorites = new Set(), showingFavorites = false;
 
   $('year').textContent = new Date().getFullYear();
  const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
@@ -738,6 +738,34 @@ if (file) {
     $('authMessage').textContent = '';
     open('authModal');
   });
+
+  $('favoritesOpen').addEventListener('click', async () => {
+  await syncUser();
+
+  if (!user) {
+    alert('Войди в аккаунт, чтобы открыть избранное');
+    return;
+  }
+
+  const favoriteListings = listings.filter(item =>
+    favorites.has(String(item.id))
+  );
+
+  $('status').textContent = 'Твои избранные объявления';
+
+  const grid = $('grid');
+  grid.innerHTML = '';
+
+  if (!favoriteListings.length) {
+    grid.innerHTML = '<p>В избранном пока пусто ❤️</p>';
+    return;
+  }
+
+  const originalListings = listings;
+  listings = favoriteListings;
+  render();
+  listings = originalListings;
+});
 
   $('toggleAuth').addEventListener('click', () => {
     signup = !signup;
