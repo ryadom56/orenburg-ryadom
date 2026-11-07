@@ -266,7 +266,42 @@ editButton.addEventListener('click', () => {
     saveButton.disabled = true;
     message.textContent = 'Сохраняем...';
 
+const avatarFile = document.getElementById('profileAvatar').files[0];
+
+let avatarUrl = profileData?.avatar_url || null;
+
+if (avatarFile) {
+  if (avatarFile.size > 5 * 1024 * 1024) {
+    message.textContent = 'Фото должно быть меньше 5 МБ.';
+    saveButton.disabled = false;
+    return;
+  }
+
+  const extension = avatarFile.name.split('.').pop().toLowerCase();
+  const filePath = `${user.id}/avatar-${Date.now()}.${extension}`;
+
+  const { error: uploadError } = await db.storage
+    .from('avatars')
+    .upload(filePath, avatarFile, {
+      upsert: true,
+      contentType: avatarFile.type
+    });
+
+  if (uploadError) {
+    message.textContent = 'Ошибка загрузки фото: ' + uploadError.message;
+    saveButton.disabled = false;
+    return;
+  }
+
+  const { data: publicData } = db.storage
+    .from('avatars')
+    .getPublicUrl(filePath);
+
+  avatarUrl = publicData.publicUrl;
+}
+    
     const updates = {
+  avatar_url: avatarUrl,
       display_name: document.getElementById('profileName').value.trim(),
       phone: document.getElementById('profilePhone').value.trim(),
       telegram: document.getElementById('profileTelegram').value.trim(),
