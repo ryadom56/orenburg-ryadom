@@ -58,3 +58,19 @@
     flex-direction: column;
   }
 }
+
+/* Полноэкранная страница профиля */
+#userProfilePage {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 72px);
+  margin: 0;
+  padding: 30px 5% 50px;
+  background: #f7f8fa;
+}
+
+#userProfileContent {
+  width: 100%;
+  max-width: 1200px;
+  margin: 25px auto 0;
+}
