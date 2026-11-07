@@ -138,48 +138,125 @@
       showDetail(id);
     }));
 
-    list.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', async () => {
+   list.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => {
   const x = mine.find(a => String(a.id) === String(btn.dataset.edit));
   if (!x) return;
 
-  const title = prompt('Название объявления:', x.title);
-  if (title === null) return;
+  document.getElementById('editListingModal')?.remove();
 
-  const priceText = prompt('Цена в рублях:', String(x.price));
-  if (priceText === null) return;
+  const modal = document.createElement('div');
+  modal.id = 'editListingModal';
+  modal.className = 'modal open';
 
-  const category = prompt('Категория:', x.category);
-  if (category === null) return;
+  modal.innerHTML = `
+    <div class="dialog edit-dialog">
+      <button type="button" class="x" id="editClose">&times;</button>
+      <h2>Редактирование объявления</h2>
+      <p class="edit-hint">Измени только те поля, которые хочешь обновить.</p>
 
-  const description = prompt('Описание:', x.description || '');
-  if (description === null) return;
+      <form id="editListingForm">
+        <label>
+          Название объявления
+          <input id="editTitle" required>
+        </label>
 
-  const contact = prompt('Контакт для связи:', x.contact || '');
-  if (contact === null) return;
+        <label>
+          Цена в рублях
+          <input id="editPrice" type="number" min="0" step="any" required>
+        </label>
 
-  const price = Number(priceText.replace(/\s/g, '').replace(',', '.'));
+        <label>
+          Категория
+          <select id="editCategory" required>
+            <option value="">Выберите категорию</option>
+            <option>Авто и запчасти</option>
+            <option>Недвижимость</option>
+            <option>Электроника</option>
+            <option>Одежда и обувь</option>
+            <option>Дом и ремонт</option>
+            <option>Работа</option>
+            <option>Услуги</option>
+            <option>Животные</option>
+            <option>Разное</option>
+          </select>
+        </label>
 
-  if (!title.trim() || !category.trim() || !Number.isFinite(price) || price < 0) {
-    alert('Проверь название, категорию и цену.');
-    return;
-  }
+        <label>
+          Описание
+          <textarea id="editDescription"></textarea>
+        </label>
 
-  const {error} = await db.from('listings').update({
-    title: title.trim(),
-    price,
-    category: category.trim(),
-    description: description.trim(),
-    contact: contact.trim()
-  }).eq('id', x.id).eq('user_id', user.id);
+        <label>
+          Контакт для связи
+          <input id="editContact">
+        </label>
 
-  if (error) {
-    alert('Ошибка изменения: ' + error.message);
-    return;
-  }
+        <div class="edit-actions">
+          <button type="button" class="btn light" id="editCancel">Отмена</button>
+          <button type="submit" class="btn primary">Сохранить изменения</button>
+        </div>
 
-  alert('Объявление успешно обновлено!');
-  await load();
-  await openProfile();
+        <div class="edit-status" id="editStatus"></div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const byId = id => modal.querySelector('#' + id);
+
+  byId('editTitle').value = x.title || '';
+  byId('editPrice').value = x.price ?? '';
+  byId('editCategory').value = x.category || '';
+  byId('editDescription').value = x.description || '';
+  byId('editContact').value = x.contact || '';
+
+  const closeEdit = () => modal.remove();
+
+  byId('editClose').addEventListener('click', closeEdit);
+  byId('editCancel').addEventListener('click', closeEdit);
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeEdit();
+  });
+
+  byId('editListingForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const title = byId('editTitle').value.trim();
+    const price = Number(byId('editPrice').value);
+    const category = byId('editCategory').value;
+    const description = byId('editDescription').value.trim();
+    const contact = byId('editContact').value.trim();
+    const status = byId('editStatus');
+    const saveButton = modal.querySelector('[type="submit"]');
+
+    if (!title || !category || !Number.isFinite(price) || price < 0) {
+      status.textContent = 'Проверь название, категорию и цену.';
+      return;
+    }
+
+    saveButton.disabled = true;
+    status.textContent = 'Сохраняем изменения...';
+
+    const { error } = await db.from('listings').update({
+      title,
+      price,
+      category,
+      description,
+      contact
+    }).eq('id', x.id).eq('user_id', user.id);
+
+    if (error) {
+      status.textContent = 'Ошибка: ' + error.message;
+      saveButton.disabled = false;
+      return;
+    }
+
+    modal.remove();
+    await load();
+    await openProfile();
+  });
 }));
     list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', async () => {
       const id = btn.dataset.delete;
