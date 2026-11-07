@@ -96,7 +96,7 @@ ${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не доб
           <h3>${esc(x.title)}</h3>
           <div class="meta">${esc(x.category)} · Оренбург</div>
         </div>
-      </article>`).join('') : '<div class="empty">Объявлений пока нет. Будь первым — размести своё!</div>';
+      </article>`).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений пока нет. Будь первым — размести своё!'}</div>`;
 
     $('grid').querySelectorAll('.favorite-btn').forEach(button => {
   button.addEventListener('click', async e => {
