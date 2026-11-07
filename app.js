@@ -194,7 +194,7 @@ console.error('Ошибка загрузки профиля:', profileError);
 }
     
     profile.innerHTML = `
-  <div class="dialog" style="max-width:700px;max-height:85vh;overflow:auto">
+  <div class="profile-card">
     <button type="button" class="x" data-profile-close>×</button>
 
     <div style="text-align:center;padding:20px 10px">
