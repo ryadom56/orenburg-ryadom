@@ -180,16 +180,8 @@ async function syncUser() {
       return;
     }
 
-    let profile = document.getElementById('profileModal');
-    if (!profile) {
-      profile = document.createElement('div');
-      profile.id = 'profileModal';
-      profile.className = 'modal';
-      document.body.appendChild(profile);
-      profile.addEventListener('click', e => {
-        if (e.target === profile || e.target.closest('[data-profile-close]')) close('profileModal');
-      });
-    }
+   const profile = document.getElementById('userProfileContent');
+if (!profile) return;
 
     const { data: profileData, error: profileError } = await db
 .from('profiles')
