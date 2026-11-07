@@ -763,32 +763,6 @@ if (file) {
 
   render();
 });
-  
-  await syncUser();
-  if (!user) {
-    alert('Войди в аккаунт, чтобы открыть избранное');
-    return;
-  }
-
-  const favoriteListings = listings.filter(item =>
-    favorites.has(String(item.id))
-  );
-
-  $('status').textContent = 'Твои избранные объявления';
-
-  const grid = $('grid');
-  grid.innerHTML = '';
-
-  if (!favoriteListings.length) {
-    grid.innerHTML = '<p>В избранном пока пусто ❤️</p>';
-    return;
-  }
-
-  const originalListings = listings;
-  listings = favoriteListings;
-  render();
-  listings = originalListings;
-});
 
   $('toggleAuth').addEventListener('click', () => {
     signup = !signup;
