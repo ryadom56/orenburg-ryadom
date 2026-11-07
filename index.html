@@ -27,4 +27,10 @@
 </button><button type="button" id="toggleAuth" class="textbtn">Нет аккаунта? Зарегистрироваться</button><p id="authMessage" class="message"></p></form></div>
 <div id="listingModal" class="modal"><form id="listingForm" class="dialog"><button type="button" class="x" data-close="listingModal">×</button><h2>Новое объявление</h2><label>Название<input id="title" maxlength="90" required placeholder="Например, iPhone 13 128 ГБ"></label><label>Цена, ₽<input id="price" type="number" min="0" step="1" required placeholder="15000"></label><label>Категория<select id="newCategory" required><option value="">Выберите категорию</option><option>Авто и запчасти</option><option>Недвижимость</option><option>Электроника</option><option>Одежда и обувь</option><option>Дом и ремонт</option><option>Работа</option><option>Услуги</option><option>Животные</option><option>Разное</option></select></label><label>Описание<textarea id="description" maxlength="1500" rows="4" required placeholder="Расскажите о товаре или услуге"></textarea></label><label>Телефон или способ связи<input id="contact" maxlength="100" required placeholder="Телефон или Telegram"></label><label>Фотография<input id="photo" type="file" accept="image/*"></label><button class="btn primary full" type="submit">Опубликовать</button><p id="listingMessage" class="message"></p></form></div>
 <div id="detailModal" class="modal"><div class="dialog"><button type="button" class="x" data-close="detailModal">×</button><div id="detail"></div></div></div>
+
+<section id="userProfilePage" class="wrap" style="display:none;padding-top:30px">
+  <button type="button" id="profileBack" class="btn light">← Назад к объявлениям</button>
+  <div id="userProfileContent"></div>
+</section>
+
 </body></html>
