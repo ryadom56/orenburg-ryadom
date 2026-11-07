@@ -752,6 +752,11 @@ if (file) {
   }
 
   showingFavorites = !showingFavorites;
+  if (showingFavorites) {
+  $('search').value = '';
+  $('category').value = '';
+  $('sort').value = 'new';
+}
 
     $('listingHeading').textContent = showingFavorites
   ? 'Избранные объявления'
