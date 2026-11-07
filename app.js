@@ -52,15 +52,53 @@
     if (error) { $('status').textContent = 'Не удалось загрузить объявления: ' + error.message; return; }
     listings = data || [];
     render();
+async function syncUser() {
+
+  if (!db) {
+
+    $('loginOpen').textContent = 'Войти';
+
+    return;
+
   }
 
-  async function syncUser() {
-    if (!db) { $('loginOpen').textContent = 'Войти'; return; }
-    const {data} = await db.auth.getUser();
-    user = data.user;
-    $('loginOpen').textContent = user ? 'Мой аккаунт' : 'Войти';
+  const { data, error } = await db.auth.getUser();
+
+  if (error) {
+
+    console.error('Ошибка получения пользователя:', error);
+
+    return;
+
   }
 
+  user = data.user;
+
+  $('loginOpen').textContent = user ? 'Мой аккаунт' : 'Войти';
+
+  if (user) {
+
+    const { error: profileError } = await db
+
+      .from('profiles')
+
+      .upsert(
+
+        { id: user.id },
+
+        { onConflict: 'id', ignoreDuplicates: true }
+
+      );
+
+    if (profileError) {
+
+      console.error('Ошибка создания профиля:', profileError);
+
+    }
+
+  }
+
+}
   async function openProfile() {
     await syncUser();
     if (!user) {
