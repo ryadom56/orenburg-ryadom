@@ -122,3 +122,16 @@
   object-fit: cover;
   display: block;
 }
+
+/* Расположение кнопок в шапке */
+#favoritesOpen {
+  order: 1;
+}
+
+#addOpen {
+  order: 2;
+}
+
+#loginOpen {
+  order: 3;
+}
