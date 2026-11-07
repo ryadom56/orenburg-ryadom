@@ -865,6 +865,90 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
     await load();
   });
 
+async function openSellerProfile(userId) {
+  const content = $('userProfileContent');
+  content.innerHTML = '<p>Загружаем профиль продавца...</p>';
+
+  const { data: profileData, error } = await db
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error || !profileData) {
+    alert('Не удалось загрузить профиль продавца.');
+    return;
+  }
+
+  const { data: sellerListings, error: listingsError } = await db
+    .from('listings')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (listingsError) {
+    alert('Не удалось загрузить объявления продавца.');
+    return;
+  }
+
+  for (const item of (sellerListings || [])) {
+    const index = listings.findIndex(a => String(a.id) === String(item.id));
+    if (index === -1) {
+      listings.push(item);
+    } else {
+      listings[index] = item;
+    }
+  }
+
+  content.innerHTML = `
+    <div class="profile-card">
+      <div style="text-align:center;padding:25px 10px">
+        ${profileData.avatar_url
+          ? `<img src="${esc(profileData.avatar_url)}" alt="Аватар" style="width:120px;height:120px;border-radius:50%;object-fit:cover">`
+          : `<div style="width:120px;height:120px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:45px">👤</div>`}
+        <h2>${esc(profileData.display_name || 'Пользователь')}</h2>
+        <p>${esc(profileData.about || 'Пользователь пока ничего не рассказал о себе.')}</p>
+      </div>
+
+      <div style="padding:20px;background:#f7f8fa;border-radius:12px">
+        <h3>Контакты продавца</h3>
+        <p><b>Телефон:</b> ${profileData.phone ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>` : 'Не указан'}</p>
+        <p><b>Telegram:</b> ${profileData.telegram ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>` : 'Не указан'}</p>
+        <p><b>WhatsApp:</b> ${profileData.whatsapp ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>` : 'Не указан'}</p>
+        <p><b>VK:</b> ${profileData.vk ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>` : 'Не указан'}</p>
+      </div>
+
+      <div style="margin-top:25px">
+        <div class="section-head">
+          <h3>Объявления продавца</h3>
+          <b>Всего: ${(sellerListings || []).length}</b>
+        </div>
+
+        <div>
+          ${(sellerListings || []).length
+            ? sellerListings.map(x => `
+              <div class="item" style="margin:12px 0;padding:12px">
+                <b>${esc(x.title)}</b>
+                <p class="price">${rub(x.price)}</p>
+                <button class="btn light" data-seller-view="${esc(x.id)}">Посмотреть объявление</button>
+              </div>
+            `).join('')
+            : '<p>У продавца пока нет объявлений.</p>'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  $('userProfilePage').style.display = 'block';
+  document.querySelector('main.wrap').style.display = 'none';
+
+  content.querySelectorAll('[data-seller-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showDetail(btn.dataset.sellerView);
+    });
+  });
+}
+  
   async function showDetail(id) {
     const x = listings.find(a => String(a.id) === String(id));
     if (!x) return;
@@ -881,6 +965,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
       ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
 
 $('sellerProfileOpen').addEventListener('click', () => {
+  close('detailModal');
   openSellerProfile(x.user_id);
 });
     
