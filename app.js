@@ -141,8 +141,14 @@ console.error('Ошибка загрузки профиля:', profileError);
         <button type="button" class="x" data-profile-close>×</button>
         <h2>Мой аккаунт</h2>
         <p><b>Email:</b> ${esc(user.email)}</p>
-        <div class="section-head">
-          <h3>Мои объявления</h3>
+       </div>
+
+    <button type="button" id="editProfileOpen" class="btn full" style="margin:15px 0">
+     Редактировать профиль
+    </button>
+
+    <div class="section-head">
+     <h3>Мои объявления</h3>
           <b id="myCount">Загружаем…</b>
         </div>
         <div id="myListings"></div>
