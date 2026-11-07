@@ -875,6 +875,9 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
       <h2>${esc(x.title)}</h2>
       <p class="detail-desc">${esc(x.description)}</p>
       <p><b>Связь:</b> ${esc(x.contact)}</p>
+      <button type="button" id="sellerProfileOpen" class="btn light">
+  Профиль продавца
+</button>
       ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
 
     if ($('deleteListing')) $('deleteListing').addEventListener('click', async () => {
