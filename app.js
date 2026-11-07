@@ -985,6 +985,241 @@ async function openSellerProfile(userId) {
     });
   });
 }
+
+async function loadConversations() {
+  const list = $('conversationsList');
+  list.innerHTML = '<p>Загружаем диалоги...</p>';
+
+  const { data, error } = await db
+    .from('conversations')
+    .select('*')
+    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = `<p class="message">Ошибка загрузки: ${esc(error.message)}</p>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    list.innerHTML = '<p>У тебя пока нет переписок. Напиши продавцу из объявления!</p>';
+    return;
+  }
+
+  const cards = await Promise.all(data.map(async conversation => {
+    const otherId = conversation.buyer_id === user.id
+      ? conversation.seller_id
+      : conversation.buyer_id;
+
+    const { data: profile } = await db
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', otherId)
+      .maybeSingle();
+
+    const { data: listing } = await db
+      .from('listings')
+      .select('title')
+      .eq('id', conversation.listing_id)
+      .maybeSingle();
+
+    return `
+      <button type="button"
+        class="item"
+        data-chat-id="${esc(conversation.id)}"
+        style="width:100%;text-align:left;margin:10px 0;padding:15px;border:1px solid #e7e9ee;cursor:pointer">
+        <b>${esc(profile?.display_name || 'Пользователь')}</b>
+        <p class="meta">Объявление: ${esc(listing?.title || 'Объявление удалено')}</p>
+      </button>
+    `;
+  }));
+
+  list.innerHTML = cards.join('');
+
+  list.querySelectorAll('[data-chat-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openChat(btn.dataset.chatId);
+    });
+  });
+}
+
+async function openChat(conversationId) {
+  const chat = $('chatWindow');
+  const list = $('conversationsList');
+
+  list.style.display = 'none';
+  chat.style.display = 'block';
+  chat.innerHTML = '<p>Загружаем переписку...</p>';
+
+  const { data: conversation, error } = await db
+    .from('conversations')
+    .select('*')
+    .eq('id', conversationId)
+    .single();
+
+  if (error || !conversation) {
+    chat.innerHTML = '<p>Не удалось открыть переписку.</p>';
+    return;
+  }
+
+  const otherId = conversation.buyer_id === user.id
+    ? conversation.seller_id
+    : conversation.buyer_id;
+
+  const { data: profile } = await db
+    .from('profiles')
+    .select('display_name')
+    .eq('id', otherId)
+    .maybeSingle();
+
+  const { data: listing } = await db
+    .from('listings')
+    .select('title')
+    .eq('id', conversation.listing_id)
+    .maybeSingle();
+
+  chat.innerHTML = `
+    <button type="button" id="chatBack" class="btn light">
+      ← Все диалоги
+    </button>
+
+    <h3>${esc(profile?.display_name || 'Пользователь')}</h3>
+    <p class="meta">Объявление: ${esc(listing?.title || 'Объявление удалено')}</p>
+
+    <div id="chatMessages"
+      style="height:400px;overflow-y:auto;padding:15px;background:#f7f8fa;border-radius:12px;margin:15px 0">
+    </div>
+
+    <form id="messageForm" style="display:flex;gap:10px">
+      <input id="messageText" maxlength="5000"
+        placeholder="Напиши сообщение..." required
+        style="flex:1;min-width:0">
+      <button type="submit" class="btn primary">Отправить</button>
+    </form>
+
+    <p id="messageStatus" class="message"></p>
+  `;
+
+  $('chatBack').addEventListener('click', () => {
+    chat.style.display = 'none';
+    list.style.display = 'block';
+  });
+
+  async function refreshMessages() {
+    const { data, error } = await db
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    const box = $('chatMessages');
+
+    if (error) {
+      box.innerHTML = '<p>Ошибка загрузки сообщений.</p>';
+      return;
+    }
+
+    box.innerHTML = (data || []).map(message => `
+      <div style="display:flex;justify-content:${message.sender_id === user.id ? 'flex-end' : 'flex-start'};margin:8px 0">
+        <div style="max-width:80%;padding:10px 14px;border-radius:12px;background:${message.sender_id === user.id ? '#dbeafe' : '#fff'};overflow-wrap:anywhere">
+          ${esc(message.body)}
+          <div style="font-size:11px;color:#747b88;margin-top:5px">
+            ${new Date(message.created_at).toLocaleString('ru-RU')}
+          </div>
+        </div>
+      </div>
+    `).join('') || '<p>Сообщений пока нет. Напиши первым!</p>';
+
+    box.scrollTop = box.scrollHeight;
+  }
+
+  await refreshMessages();
+
+  $('messageForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const input = $('messageText');
+    const status = $('messageStatus');
+    const body = input.value.trim();
+
+    if (!body) return;
+
+    const button = $('messageForm').querySelector('[type="submit"]');
+    button.disabled = true;
+    status.textContent = 'Отправляем...';
+
+    const { error } = await db.from('messages').insert({
+      conversation_id: conversationId,
+      sender_id: user.id,
+      body
+    });
+
+    if (error) {
+      status.textContent = 'Ошибка отправки: ' + error.message;
+    } else {
+      input.value = '';
+      status.textContent = '';
+      await refreshMessages();
+    }
+
+    button.disabled = false;
+  });
+}
+
+async function startConversation(listing) {
+  await syncUser();
+
+  if (!user) {
+    alert('Войди в аккаунт, чтобы написать продавцу.');
+    open('authModal');
+    return;
+  }
+
+  if (user.id === listing.user_id) {
+    alert('Нельзя написать самому себе.');
+    return;
+  }
+
+  const { data: existing, error: findError } = await db
+    .from('conversations')
+    .select('id')
+    .eq('listing_id', listing.id)
+    .eq('buyer_id', user.id)
+    .maybeSingle();
+
+  if (findError) {
+    alert('Не удалось проверить переписку: ' + findError.message);
+    return;
+  }
+
+  let conversationId = existing?.id;
+
+  if (!conversationId) {
+    const { data: created, error } = await db
+      .from('conversations')
+      .insert({
+        listing_id: listing.id,
+        buyer_id: user.id,
+        seller_id: listing.user_id
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      alert('Не удалось создать переписку: ' + error.message);
+      return;
+    }
+
+    conversationId = created.id;
+  }
+
+  $('userProfilePage').style.display = 'none';
+  $('messagesPage').style.display = 'block';
+  document.querySelector('main.wrap').style.display = 'none';
+
+  await loadConversations();
+  await openChat(conversationId);
+}
   
   async function showDetail(id) {
     const x = listings.find(a => String(a.id) === String(id));
@@ -999,6 +1234,12 @@ async function openSellerProfile(userId) {
       <button type="button" id="sellerProfileOpen" class="btn light">
   Профиль продавца
 </button>
+${user && user.id !== x.user_id ? `
+  <button type="button" id="writeSeller" class="btn primary">
+    ✉ Написать продавцу
+  </button>
+` : ''}
+
       ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
 
 $('sellerProfileOpen').addEventListener('click', () => {
