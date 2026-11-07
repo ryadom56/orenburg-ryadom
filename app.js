@@ -350,6 +350,27 @@ if (file) {
     await syncUser();
     close('authModal');
   });
+  $('telegramLogin').addEventListener('click', async () => {
+  const msg = $('authMessage');
+
+  if (!db) {
+    msg.textContent = 'Сначала настрой config.js.';
+    return;
+  }
+
+  msg.textContent = 'Переходим к авторизации Telegram...';
+
+  const { error } = await db.auth.signInWithOAuth({
+    provider: 'custom:telegram',
+    options: {
+      redirectTo: window.location.origin
+    }
+  });
+
+  if (error) {
+    msg.textContent = 'Ошибка Telegram: ' + error.message;
+  }
+});
 
   $('addOpen').addEventListener('click', async () => {
     if (!db) { alert('Сначала подключим Supabase — смотри README.'); return; }
