@@ -203,6 +203,47 @@ ${profileData?.avatar_url
 
     open('profileModal');
 
+const deleteAvatarButton = document.getElementById('deleteAvatar');
+
+if (deleteAvatarButton) {
+  deleteAvatarButton.addEventListener('click', async () => {
+    if (!confirm('Удалить фотографию профиля?')) return;
+
+    deleteAvatarButton.disabled = true;
+
+    const marker = '/avatars/';
+    const oldPath = decodeURIComponent(
+      profileData.avatar_url.split(marker)[1] || ''
+    );
+
+    if (oldPath) {
+      const { error: removeError } = await db.storage
+        .from('avatars')
+        .remove([oldPath]);
+
+      if (removeError) {
+        alert('Ошибка удаления фото: ' + removeError.message);
+        deleteAvatarButton.disabled = false;
+        return;
+      }
+    }
+
+    const { error } = await db
+      .from('profiles')
+      .update({ avatar_url: null })
+      .eq('id', user.id);
+
+    if (error) {
+      alert('Ошибка обновления профиля: ' + error.message);
+      deleteAvatarButton.disabled = false;
+      return;
+    }
+
+    close('profileModal');
+    await openProfile();
+  });
+}
+    
     const editButton = document.getElementById('editProfileOpen');
 
 editButton.addEventListener('click', () => {
