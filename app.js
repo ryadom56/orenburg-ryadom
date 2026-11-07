@@ -747,6 +747,27 @@ $('profileBack').addEventListener('click', () => {
   $('userProfilePage').style.display = 'none';
   document.querySelector('main.wrap').style.display = '';
 });
+
+$('messagesOpen').addEventListener('click', async () => {
+  await syncUser();
+
+  if (!user) {
+    alert('Войди в аккаунт, чтобы пользоваться сообщениями.');
+    open('authModal');
+    return;
+  }
+
+  $('userProfilePage').style.display = 'none';
+  $('messagesPage').style.display = 'block';
+  document.querySelector('main.wrap').style.display = 'none';
+
+  await loadConversations();
+});
+
+$('messagesBack').addEventListener('click', () => {
+  $('messagesPage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+});
   
   $('loginOpen').addEventListener('click', async () => {
     await syncUser();
