@@ -121,8 +121,11 @@ $('grid').querySelectorAll('article.item[data-id]').forEach(el => {
   }
 
 async function syncUser() {
+  const accountButton = $('loginOpen');
+
   if (!db) {
-    $('loginOpen').textContent = 'Войти';
+    accountButton.innerHTML = '👤';
+    accountButton.title = 'Войти';
     favorites.clear();
     return;
   }
@@ -135,8 +138,6 @@ async function syncUser() {
   }
 
   user = data.user;
-
-  $('loginOpen').textContent = user ? 'Мой аккаунт' : 'Войти';
 
   favorites.clear();
 
@@ -152,6 +153,18 @@ async function syncUser() {
       console.error('Ошибка создания профиля:', profileError);
     }
 
+    const { data: profileData } = await db
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    accountButton.innerHTML = profileData?.avatar_url
+      ? `<img src="${esc(profileData.avatar_url)}" alt="Мой профиль">`
+      : '👤';
+
+    accountButton.title = 'Мой профиль';
+
     const { data: favoriteRows, error: favoritesError } = await db
       .from('favorites')
       .select('listing_id')
@@ -164,6 +177,9 @@ async function syncUser() {
         (favoriteRows || []).map(item => String(item.listing_id))
       );
     }
+  } else {
+    accountButton.innerHTML = '👤';
+    accountButton.title = 'Войти';
   }
 
   render();
