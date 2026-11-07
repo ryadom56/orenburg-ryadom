@@ -124,14 +124,7 @@
 }
 
 /* Расположение кнопок в шапке */
-#favoritesOpen {
-  order: 1;
-}
-
-#addOpen {
-  order: 2;
-}
-
-#loginOpen {
-  order: 3;
-}
+#addOpen { order: 1; }
+#messagesOpen { order: 2; }
+#favoritesOpen { order: 3; }
+#loginOpen { order: 4; }
