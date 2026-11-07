@@ -259,7 +259,8 @@ ${profileData?.avatar_url
     </button>
   </div>`;
 
-    open('profileModal');
+    document.getElementById('userProfilePage').style.display = 'block';
+document.querySelector('main.wrap').style.display = 'none';
 
 const deleteAvatarButton = document.getElementById('deleteAvatar');
 
