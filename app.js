@@ -125,10 +125,11 @@
             <p class="meta">${esc(x.category)}</p>
           </div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn light" data-view="${esc(x.id)}">Посмотреть</button>
-          <button class="btn danger" data-delete="${esc(x.id)}">Удалить</button>
-        </div>
+       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button class="btn light" data-view="${esc(x.id)}">Посмотреть</button>
+<button class="btn light" data-edit="${esc(x.id)}">Редактировать</button>
+<button class="btn danger" data-delete="${esc(x.id)}">Удалить</button>
+</div>
       </div>`).join('') : '<p>У тебя пока нет объявлений.</p>';
 
     list.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => {
@@ -137,6 +138,49 @@
       showDetail(id);
     }));
 
+    list.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', async () => {
+  const x = mine.find(a => String(a.id) === String(btn.dataset.edit));
+  if (!x) return;
+
+  const title = prompt('Название объявления:', x.title);
+  if (title === null) return;
+
+  const priceText = prompt('Цена в рублях:', String(x.price));
+  if (priceText === null) return;
+
+  const category = prompt('Категория:', x.category);
+  if (category === null) return;
+
+  const description = prompt('Описание:', x.description || '');
+  if (description === null) return;
+
+  const contact = prompt('Контакт для связи:', x.contact || '');
+  if (contact === null) return;
+
+  const price = Number(priceText.replace(/\s/g, '').replace(',', '.'));
+
+  if (!title.trim() || !category.trim() || !Number.isFinite(price) || price < 0) {
+    alert('Проверь название, категорию и цену.');
+    return;
+  }
+
+  const {error} = await db.from('listings').update({
+    title: title.trim(),
+    price,
+    category: category.trim(),
+    description: description.trim(),
+    contact: contact.trim()
+  }).eq('id', x.id).eq('user_id', user.id);
+
+  if (error) {
+    alert('Ошибка изменения: ' + error.message);
+    return;
+  }
+
+  alert('Объявление успешно обновлено!');
+  await load();
+  await openProfile();
+}));
     list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', async () => {
       const id = btn.dataset.delete;
       if (!confirm('Удалить это объявление?')) return;
