@@ -233,6 +233,37 @@
     const description = byId('editDescription').value.trim();
     const contact = byId('editContact').value.trim();
     const status = byId('editStatus');
+    let photo_url = x.photo_url || null;
+const file = byId('editPhoto').files[0];
+
+if (file) {
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = 'Фото должно быть не больше 5 МБ.';
+    return;
+  }
+
+  const ext = (file.name.split('.').pop() || 'jpg')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+  const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+  const up = await db.storage
+    .from('listing-photos')
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (up.error) {
+    status.textContent = 'Ошибка загрузки фото: ' + up.error.message;
+    return;
+  }
+
+  photo_url = db.storage
+    .from('listing-photos')
+    .getPublicUrl(path).data.publicUrl;
+}
     const saveButton = modal.querySelector('[type="submit"]');
 
     if (!title || !category || !Number.isFinite(price) || price < 0) {
@@ -243,13 +274,14 @@
     saveButton.disabled = true;
     status.textContent = 'Сохраняем изменения...';
 
-    const { error } = await db.from('listings').update({
-      title,
-      price,
-      category,
-      description,
-      contact
-    }).eq('id', x.id).eq('user_id', user.id);
+   const { error } = await db.from('listings').update({
+  title,
+  price,
+  category,
+  description,
+  contact,
+  photo_url
+}).eq('id', x.id).eq('user_id', user.id);
 
     if (error) {
       status.textContent = 'Ошибка: ' + error.message;
