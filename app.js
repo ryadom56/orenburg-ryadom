@@ -1350,25 +1350,6 @@ async function startConversation(listing) {
   }
 }
 
-    const writeSellerButton = $('writeSeller');
-
-if (writeSellerButton) {
-  writeSellerButton.addEventListener('click', () => {
-    close('detailModal');
-    startConversation(x);
-  });
-}
-    
-    if ($('deleteListing')) $('deleteListing').addEventListener('click', async () => {
-      if (!confirm('Удалить объявление?')) return;
-      const {error} = await db.from('listings').delete().eq('id',x.id);
-      if (error) { alert(error.message); return; }
-      close('detailModal');
-      await load();
-    });
-    open('detailModal');
-  }
-
   $('searchBtn').addEventListener('click',render);
   $('search').addEventListener('keydown',e => { if(e.key === 'Enter') render(); });
   $('category').addEventListener('change',render);
