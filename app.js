@@ -1078,19 +1078,12 @@ async function openChat(conversationId) {
     .eq('id', otherId)
     .maybeSingle();
 
-  const { data: listing } = await db
-    .from('listings')
-    .select('title')
-    .eq('id', conversation.listing_id)
-    .maybeSingle();
-
   chat.innerHTML = `
     <button type="button" id="chatBack" class="btn light">
       ← Все диалоги
     </button>
 
     <h3>${esc(profile?.display_name || 'Пользователь')}</h3>
-    <p class="meta">Объявление: ${esc(listing?.title || 'Объявление удалено')}</p>
 
     <div id="chatMessages"
       style="height:400px;overflow-y:auto;padding:15px;background:#f7f8fa;border-radius:12px;margin:15px 0">
