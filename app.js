@@ -11,7 +11,7 @@
   if (c === '<') return '<';
   if (c === '>') return '>';
   if (c === '"') return '"';
-  return ''';
+  return '&#39;';
 });
   const open = id => $(id).classList.add('open');
   const close = id => $(id).classList.remove('open');
