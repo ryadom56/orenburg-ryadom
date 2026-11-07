@@ -319,9 +319,9 @@ console.log('SESSION EXISTS:', !!sessionData.session);
   const { error: uploadError } = await db.storage
     .from('avatars')
     .upload(filePath, avatarFile, {
-      upsert: true,
-      contentType: avatarFile.type
-    });
+  upsert: false,
+  contentType: avatarFile.type
+});
 
   if (uploadError) {
     message.textContent = 'Ошибка загрузки фото: ' + uploadError.message;
