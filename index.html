@@ -12,6 +12,7 @@
 <header class="top"><a class="brand" href="#">Оренбург<span>рядом</span></a><div class="top-actions">
   <button id="loginOpen" class="btn light">Войти</button>
   <button id="favoritesOpen" class="btn light">♡ Избранное</button>
+  <button id="messagesOpen" class="btn light">✉ Сообщения</button>
   <button id="addOpen" class="btn primary">＋ Разместить объявление</button>
 </div>
 </header>
@@ -31,7 +32,17 @@
   <button type="button" id="profileBack" class="btn light">← Назад к объявлениям</button>
   <div id="userProfileContent"></div>
 </section>
-
+<section id="messagesPage" class="wrap" style="display:none;padding-top:30px">
+  <button type="button" id="messagesBack" class="btn light">← Назад к объявлениям</button>
+  <div class="profile-card" style="margin-top:20px">
+    <h2>Сообщения</h2>
+    <div id="conversationsList">
+      <p>Здесь будут твои диалоги.</p>
+    </div>
+    <div id="chatWindow" style="display:none"></div>
+  </div>
+</section>
+  
 <footer>© <span id="year"></span> Оренбург рядом · Сделано для жителей региона</footer>
 
 </body></html>
