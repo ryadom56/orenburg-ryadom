@@ -128,3 +128,27 @@
 #messagesOpen { order: 2; }
 #favoritesOpen { order: 3; }
 #loginOpen { order: 4; }
+
+/* Иконки сообщений и избранного */
+.icon-btn {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 23px;
+  line-height: 1;
+  background: #fff;
+  color: #20242d;
+  border: 1px solid #e7e9ee;
+  cursor: pointer;
+  transition: background .2s, color .2s, transform .2s;
+}
+
+.icon-btn:hover {
+  background: #f0f2f5;
+  transform: translateY(-1px);
+}
