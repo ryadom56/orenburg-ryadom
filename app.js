@@ -307,6 +307,8 @@ if (avatarFile) {
 
   const extension = avatarFile.name.split('.').pop().toLowerCase();
   const filePath = `${user.id}/avatar-${Date.now()}.${extension}`;
+console.log('USER ID:', user.id);
+console.log('AVATAR PATH:', filePath);
 
   const { error: uploadError } = await db.storage
     .from('avatars')
