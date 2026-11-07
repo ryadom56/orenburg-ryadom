@@ -753,6 +753,10 @@ if (file) {
 
   showingFavorites = !showingFavorites;
 
+    $('listingHeading').textContent = showingFavorites
+  ? 'Избранные объявления'
+  : 'Свежие объявления';
+
   $('favoritesOpen').textContent = showingFavorites
     ? '← Все объявления'
     : '♡ Избранное';
