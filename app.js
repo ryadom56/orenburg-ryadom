@@ -6,7 +6,7 @@
 
   $('year').textContent = new Date().getFullYear();
   const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => {
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
   if (c === '&') return '&';
   if (c === '<') return '<';
   if (c === '>') return '>';
