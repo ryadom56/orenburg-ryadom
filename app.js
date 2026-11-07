@@ -24,6 +24,47 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
     if (!db) $('status').textContent = 'Чтобы подключить общую базу, сначала заполни config.js (инструкция в README).';
   }
 
+async function toggleFavorite(id) {
+  if (!user) {
+    alert('Войди в аккаунт, чтобы добавлять объявления в избранное');
+    return;
+  }
+
+  const key = String(id);
+
+  if (favorites.has(key)) {
+    const { error } = await db
+      .from('favorites')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('listing_id', id);
+
+    if (error) {
+      alert('Ошибка удаления из избранного: ' + error.message);
+      return;
+    }
+
+    favorites.delete(key);
+
+  } else {
+    const { error } = await db
+      .from('favorites')
+      .insert({
+        user_id: user.id,
+        listing_id: id
+      });
+
+    if (error) {
+      alert('Ошибка добавления в избранное: ' + error.message);
+      return;
+    }
+
+    favorites.add(key);
+  }
+
+  render();
+}
+  
   function render() {
     const q = $('search').value.trim().toLowerCase();
     const cat = $('category').value;
@@ -35,7 +76,17 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
 
     $('grid').innerHTML = rows.length ? rows.map(x => `
       <article class="item" data-id="${esc(x.id)}">
-        <div class="photo">${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не добавлено'}</div>
+<div class="photo" style="position:relative">
+${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не добавлено'}
+
+<button
+    type="button"
+    class="favorite-btn"
+    data-id="${esc(x.id)}"
+    style="position:absolute;top:10px;right:10px;z-index:2;background:white;border:0;border-radius:50%;width:38px;height:38px;font-size:23px;cursor:pointer;color:${favorites.has(String(x.id)) ? '#e11d48' : '#777'}"
+    aria-label="Добавить в избранное"
+>${favorites.has(String(x.id)) ? '♥' : '♡'}</button>
+</div>
         <div class="item-body">
           <div class="price">${rub(x.price)}</div>
           <h3>${esc(x.title)}</h3>
@@ -43,7 +94,17 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
         </div>
       </article>`).join('') : '<div class="empty">Объявлений пока нет. Будь первым — размести своё!</div>';
 
-    $('grid').querySelectorAll('[data-id]').forEach(el => el.addEventListener('click', () => showDetail(el.dataset.id)));
+    $('grid').querySelectorAll('.favorite-btn').forEach(button => {
+  button.addEventListener('click', async e => {
+    e.preventDefault();
+    e.stopPropagation();
+    await toggleFavorite(button.dataset.id);
+  });
+});
+
+$('grid').querySelectorAll('article.item[data-id]').forEach(el => {
+  el.addEventListener('click', () => showDetail(el.dataset.id));
+});
     $('status').textContent = `Найдено объявлений: ${rows.length}`;
   }
 
