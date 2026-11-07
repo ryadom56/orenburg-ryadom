@@ -544,10 +544,11 @@ if (avatarFile && profileData?.avatar_url) {
       </div>`).join('') : '<p>У тебя пока нет объявлений.</p>';
 
     list.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => {
-      const id = btn.dataset.view;
-      close('profileModal');
-      showDetail(id);
-    }));
+  const id = btn.dataset.view;
+  $('userProfilePage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+  showDetail(id);
+}));
 
    list.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => {
   const x = mine.find(a => String(a.id) === String(btn.dataset.edit));
