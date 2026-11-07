@@ -761,6 +761,8 @@ if (file) {
     $('listingHeading').textContent = showingFavorites
   ? 'Избранные объявления'
   : 'Свежие объявления';
+    
+$('heroSection').style.display = showingFavorites ? 'none' : '';
 
   $('favoritesOpen').textContent = showingFavorites
     ? '← Все объявления'
