@@ -159,3 +159,167 @@
   background: #f0f2f5;
   transform: translateY(-1px);
 }
+
+/* Полноэкранная страница объявления */
+#listingPage {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 72px);
+  margin: 0;
+  padding: 30px 5% 50px;
+  background: #f7f8fa;
+}
+
+#listingPageContent {
+  max-width: 1250px;
+  margin: 25px auto 0;
+}
+
+.listing-full-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 25px;
+  align-items: start;
+}
+
+.listing-main-info,
+.listing-seller-card {
+  background: #fff;
+  border: 1px solid #e7e9ee;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.03);
+}
+
+.listing-gallery {
+  width: 100%;
+  height: 480px;
+  background: #f1f2f5;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listing-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.listing-no-photo {
+  color: #747b88;
+  font-size: 18px;
+}
+
+.listing-details {
+  padding-top: 25px;
+}
+
+.listing-full-price {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 15px 0;
+  color: #20242d;
+}
+
+.listing-details h1 {
+  font-size: 28px;
+  margin: 10px 0 25px;
+}
+
+.listing-description {
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.listing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.listing-seller-card {
+  position: sticky;
+  top: 20px;
+}
+
+.listing-seller-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.listing-seller-info img,
+.listing-seller-avatar {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.listing-seller-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f2f5;
+  font-size: 25px;
+}
+
+.listing-seller-info p {
+  color: #747b88;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+@media (max-width: 850px) {
+  #listingPage {
+    padding: 20px 12px 35px;
+  }
+
+  .listing-full-card {
+    grid-template-columns: 1fr;
+  }
+
+  .listing-seller-card {
+    position: static;
+  }
+
+  .listing-gallery {
+    height: 350px;
+  }
+}
+
+@media (max-width: 500px) {
+  .listing-main-info,
+  .listing-seller-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .listing-gallery {
+    height: 270px;
+  }
+
+  .listing-details h1 {
+    font-size: 22px;
+  }
+
+  .listing-full-price {
+    font-size: 29px;
+  }
+
+  .listing-actions {
+    flex-direction: column;
+  }
+
+  .listing-actions button {
+    width: 100%;
+  }
+}
