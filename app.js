@@ -765,6 +765,12 @@ $('messagesOpen').addEventListener('click', async () => {
 });
 
 $('messagesBack').addEventListener('click', () => {
+
+$('listingPageBack').addEventListener('click', () => {
+  $('listingPage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+});
+  
   $('messagesPage').style.display = 'none';
   document.querySelector('main.wrap').style.display = '';
 });
@@ -1222,23 +1228,127 @@ async function startConversation(listing) {
 }
   
   async function showDetail(id) {
-    const x = listings.find(a => String(a.id) === String(id));
-    if (!x) return;
-    $('detail').innerHTML = `
-      ${x.photo_url ? `<img class="detail-photo" src="${esc(x.photo_url)}" alt="">` : ''}
-      <p class="meta">${esc(x.category)} · Оренбург</p>
-      <div class="detail-price">${rub(x.price)}</div>
-      <h2>${esc(x.title)}</h2>
-      <p class="detail-desc">${esc(x.description)}</p>
-      <p><b>Связь:</b> ${esc(x.contact)}</p>
-      <button type="button" id="sellerProfileOpen" class="btn light">
-  Профиль продавца
-</button>
-${user && user.id !== x.user_id ? `
-  <button type="button" id="writeSeller" class="btn primary">
-    ✉ Написать продавцу
-  </button>
-` : ''}
+  const x = listings.find(a => String(a.id) === String(id));
+  if (!x) return;
+
+  const content = $('listingPageContent');
+  content.innerHTML = '<p>Загружаем объявление...</p>';
+
+  const { data: seller } = await db
+    .from('profiles')
+    .select('display_name, avatar_url, about')
+    .eq('id', x.user_id)
+    .maybeSingle();
+
+  content.innerHTML = `
+    <div class="listing-full-card">
+
+      <div class="listing-main-info">
+
+        <div class="listing-gallery">
+          ${x.photo_url
+            ? `<img src="${esc(x.photo_url)}" alt="${esc(x.title)}">`
+            : `<div class="listing-no-photo">📷 Нет фотографии</div>`}
+        </div>
+
+        <div class="listing-details">
+          <p class="meta">${esc(x.category || 'Без категории')} · Оренбург</p>
+
+          <div class="listing-full-price">${rub(x.price)}</div>
+
+          <h1>${esc(x.title)}</h1>
+
+          <h3>Описание</h3>
+          <p class="listing-description">${esc(x.description || 'Описание не указано.')}</p>
+
+          <div class="listing-actions">
+            ${user && user.id !== x.user_id ? `
+              <button type="button" id="writeSeller" class="btn primary">
+                ✉ Написать продавцу
+              </button>
+            ` : ''}
+
+            <button type="button" id="listingFavorite" class="btn light">
+              ${favorites.has(String(x.id)) ? '♥ В избранном' : '♡ В избранное'}
+            </button>
+
+            ${user && user.id === x.user_id ? `
+              <button type="button" id="deleteListing" class="btn danger">
+                Удалить объявление
+              </button>
+            ` : ''}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="listing-seller-card">
+        <h3>Продавец</h3>
+
+        <div class="listing-seller-info">
+          ${seller?.avatar_url
+            ? `<img src="${esc(seller.avatar_url)}" alt="Аватар продавца">`
+            : '<div class="listing-seller-avatar">👤</div>'}
+
+          <div>
+            <b>${esc(seller?.display_name || 'Пользователь')}</b>
+            <p>${esc(seller?.about || 'Информация о продавце не указана.')}</p>
+          </div>
+        </div>
+
+        <button type="button" id="sellerProfileOpen" class="btn light">
+          Профиль продавца
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.querySelector('main.wrap').style.display = 'none';
+  $('userProfilePage').style.display = 'none';
+  $('messagesPage').style.display = 'none';
+  $('listingPage').style.display = 'block';
+
+  $('sellerProfileOpen').addEventListener('click', () => {
+    $('listingPage').style.display = 'none';
+    openSellerProfile(x.user_id);
+  });
+
+  const writeButton = $('writeSeller');
+
+  if (writeButton) {
+    writeButton.addEventListener('click', () => {
+      startConversation(x);
+    });
+  }
+
+  $('listingFavorite').addEventListener('click', async () => {
+    await toggleFavorite(x.id);
+    await showDetail(x.id);
+  });
+
+  const deleteButton = $('deleteListing');
+
+  if (deleteButton) {
+    deleteButton.addEventListener('click', async () => {
+      if (!confirm('Удалить объявление?')) return;
+
+      const { error } = await db
+        .from('listings')
+        .delete()
+        .eq('id', x.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      $('listingPage').style.display = 'none';
+      document.querySelector('main.wrap').style.display = '';
+      await load();
+    });
+  }
+}
 
       ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
 
