@@ -56,51 +56,52 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
   }
 
 async function syncUser() {
-
   if (!db) {
-
     $('loginOpen').textContent = 'Войти';
-
+    favorites.clear();
     return;
-
   }
 
   const { data, error } = await db.auth.getUser();
 
   if (error) {
-
     console.error('Ошибка получения пользователя:', error);
-
     return;
-
   }
 
   user = data.user;
 
   $('loginOpen').textContent = user ? 'Мой аккаунт' : 'Войти';
 
+  favorites.clear();
+
   if (user) {
-
     const { error: profileError } = await db
-
       .from('profiles')
-
       .upsert(
-
         { id: user.id },
-
         { onConflict: 'id', ignoreDuplicates: true }
-
       );
 
     if (profileError) {
-
       console.error('Ошибка создания профиля:', profileError);
-
     }
 
+    const { data: favoriteRows, error: favoritesError } = await db
+      .from('favorites')
+      .select('listing_id')
+      .eq('user_id', user.id);
+
+    if (favoritesError) {
+      console.error('Ошибка загрузки избранного:', favoritesError);
+    } else {
+      favorites = new Set(
+        (favoriteRows || []).map(item => String(item.listing_id))
+      );
+    }
   }
 
+  render();
 }
     
   async function openProfile() {
