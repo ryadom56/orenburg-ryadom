@@ -2,7 +2,7 @@
   const $ = id => document.getElementById(id);
   const clientReady = () => window.supabase && window.SUPABASE_URL && window.SUPABASE_PUBLISHABLE_KEY && !window.SUPABASE_URL.includes('ВСТАВЬ') && !window.SUPABASE_PUBLISHABLE_KEY.includes('ВСТАВЬ');
   const db = clientReady() ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY) : null;
-  let user = null, signup = false, listings = [];
+  let user = null, signup = false, listings = [], favorites = new Set();
 
   $('year').textContent = new Date().getFullYear();
  const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
