@@ -145,6 +145,12 @@ console.error('Ошибка загрузки профиля:', profileError);
           style="width:110px;height:110px;border-radius:50%;object-fit:cover">`
         : `<div style="width:110px;height:110px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:42px">👤</div>`}
 
+${profileData?.avatar_url
+  ? `<button type="button" id="deleteAvatar" class="btn danger" style="margin:10px">
+       Удалить аватар
+     </button>`
+  : ''}
+
       <h2>${esc(profileData?.display_name || 'Пользователь')}</h2>
       <p>${esc(profileData?.about || 'Расскажи немного о себе')}</p>
     </div>
