@@ -13,6 +13,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
   '"': '"',
   "'": '&#39;'
 }[c]));
+  
   const open = id => $(id).classList.add('open');
   const close = id => $(id).classList.remove('open');
 
