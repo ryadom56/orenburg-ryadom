@@ -380,6 +380,23 @@ console.log('SESSION EXISTS:', !!sessionData.session);
       return;
     }
 
+if (avatarFile && profileData?.avatar_url) {
+  const marker = '/avatars/';
+  const oldPath = decodeURIComponent(
+    profileData.avatar_url.split(marker)[1] || ''
+  );
+
+  if (oldPath) {
+    const { error: removeError } = await db.storage
+      .from('avatars')
+      .remove([oldPath]);
+
+    if (removeError) {
+      console.warn('Не удалось удалить старый аватар:', removeError);
+    }
+  }
+}
+    
     close('editProfileModal');
     close('profileModal');
     await openProfile();
