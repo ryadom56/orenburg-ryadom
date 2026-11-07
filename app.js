@@ -751,6 +751,26 @@ if (file) {
     return;
   }
 
+  showingFavorites = !showingFavorites;
+
+  $('favoritesOpen').textContent = showingFavorites
+    ? '← Все объявления'
+    : '♡ Избранное';
+
+  $('status').textContent = showingFavorites
+    ? 'Твои избранные объявления'
+    : 'Свежие объявления';
+
+  render();
+});
+  
+  await syncUser();
+
+  if (!user) {
+    alert('Войди в аккаунт, чтобы открыть избранное');
+    return;
+  }
+
   const favoriteListings = listings.filter(item =>
     favorites.has(String(item.id))
   );
