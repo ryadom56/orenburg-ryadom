@@ -136,25 +136,43 @@ console.error('Ошибка загрузки профиля:', profileError);
 }
     
     profile.innerHTML = `
-DIL0`
-      
-      <div class="dialog" style="max-width:650px;max-height:85vh;overflow:auto">
-        <button type="button" class="x" data-profile-close>×</button>
-        <h2>Мой аккаунт</h2>
-        <p><b>Email:</b> ${esc(user.email)}</p>
-       </div>
+  <div class="dialog" style="max-width:700px;max-height:85vh;overflow:auto">
+    <button type="button" class="x" data-profile-close>×</button>
+
+    <div style="text-align:center;padding:20px 10px">
+      ${profileData?.avatar_url
+        ? `<img src="${esc(profileData.avatar_url)}" alt="Аватар"
+          style="width:110px;height:110px;border-radius:50%;object-fit:cover">`
+        : `<div style="width:110px;height:110px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:42px">👤</div>`}
+
+      <h2>${esc(profileData?.display_name || 'Пользователь')}</h2>
+      <p>${esc(profileData?.about || 'Расскажи немного о себе')}</p>
+    </div>
+
+    <div style="padding:15px;background:#f7f8fa;border-radius:12px">
+      <h3>Контакты</h3>
+      <p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
+      <p><b>Телефон:</b> ${esc(profileData?.phone || 'Не указан')}</p>
+      <p><b>Telegram:</b> ${esc(profileData?.telegram || 'Не указан')}</p>
+      <p><b>WhatsApp:</b> ${esc(profileData?.whatsapp || 'Не указан')}</p>
+      <p><b>VK:</b> ${esc(profileData?.vk || 'Не указан')}</p>
+    </div>
 
     <button type="button" id="editProfileOpen" class="btn full" style="margin:15px 0">
-     Редактировать профиль
+      Редактировать профиль
     </button>
 
     <div class="section-head">
-     <h3>Мои объявления</h3>
-          <b id="myCount">Загружаем…</b>
-        </div>
-        <div id="myListings"></div>
-        <button type="button" id="profileLogout" class="btn light full">Выйти из аккаунта</button>
-      </div>`;
+      <h3>Мои объявления</h3>
+      <b id="myCount">Загружаем…</b>
+    </div>
+
+    <div id="myListings"></div>
+
+    <button type="button" id="profileLogout" class="btn light full">
+      Выйти из аккаунта
+    </button>
+  </div>`;
 
     open('profileModal');
 
