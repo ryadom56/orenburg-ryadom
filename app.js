@@ -124,7 +124,7 @@ async function syncUser() {
   const accountButton = $('loginOpen');
 
   if (!db) {
-    accountButton.innerHTML = '👤';
+    accountButton.innerHTML = 'Войти';
     accountButton.title = 'Войти';
     favorites.clear();
     return;
@@ -178,7 +178,7 @@ async function syncUser() {
       );
     }
   } else {
-    accountButton.innerHTML = '👤';
+    accountButton.innerHTML = 'Войти';
     accountButton.title = 'Войти';
   }
 
