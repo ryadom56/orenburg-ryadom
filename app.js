@@ -99,6 +99,7 @@ async function syncUser() {
   }
 
 }
+    
   async function openProfile() {
     await syncUser();
     if (!user) {
