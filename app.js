@@ -1246,6 +1246,15 @@ $('sellerProfileOpen').addEventListener('click', () => {
   close('detailModal');
   openSellerProfile(x.user_id);
 });
+
+    const writeSellerButton = $('writeSeller');
+
+if (writeSellerButton) {
+  writeSellerButton.addEventListener('click', () => {
+    close('detailModal');
+    startConversation(x);
+  });
+}
     
     if ($('deleteListing')) $('deleteListing').addEventListener('click', async () => {
       if (!confirm('Удалить объявление?')) return;
