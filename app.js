@@ -310,6 +310,12 @@ if (avatarFile) {
 console.log('USER ID:', user.id);
 console.log('AVATAR PATH:', filePath);
 
+const { data: sessionData } = await db.auth.getSession();
+
+console.log('SESSION USER:', sessionData.session?.user?.id);
+console.log('CURRENT USER:', user?.id);
+console.log('SESSION EXISTS:', !!sessionData.session);
+  
   const { error: uploadError } = await db.storage
     .from('avatars')
     .upload(filePath, avatarFile, {
