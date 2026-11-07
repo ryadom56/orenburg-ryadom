@@ -249,6 +249,34 @@ editButton.addEventListener('click', () => {
 
   open('editProfileModal');
 
+  const avatarInput = document.getElementById('profileAvatar');
+const avatarPreview = document.getElementById('avatarPreview');
+
+avatarInput.addEventListener('change', () => {
+  const file = avatarInput.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Выбери изображение.');
+    avatarInput.value = '';
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Фото должно быть меньше 5 МБ.');
+    avatarInput.value = '';
+    return;
+  }
+
+  const imageUrl = URL.createObjectURL(file);
+
+  avatarPreview.innerHTML = `
+    <img src="${imageUrl}"
+      style="width:100px;height:100px;border-radius:50%;object-fit:cover">
+  `;
+});
+
   document.getElementById('closeEditProfile').addEventListener('click', () => {
     close('editProfileModal');
   });
