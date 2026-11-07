@@ -190,6 +190,10 @@
           Контакт для связи
           <input id="editContact">
         </label>
+<label>
+  Новая фотография
+  <input id="editPhoto" type="file" accept="image/*">
+</label>
 
         <div class="edit-actions">
           <button type="button" class="btn light" id="editCancel">Отмена</button>
