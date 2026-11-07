@@ -125,7 +125,18 @@ async function syncUser() {
       });
     }
 
+    const { data: profileData, error: profileError } = await db
+.from('profiles')
+.select('*')
+.eq('id', user.id)
+.maybeSingle();
+
+if (profileError) {
+console.error('Ошибка загрузки профиля:', profileError);
+}
+    
     profile.innerHTML = `
+DIL0`;
       <div class="dialog" style="max-width:650px;max-height:85vh;overflow:auto">
         <button type="button" class="x" data-profile-close>×</button>
         <h2>Мой аккаунт</h2>
