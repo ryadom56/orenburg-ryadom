@@ -193,6 +193,21 @@ editButton.addEventListener('click', () => {
       <button type="button" class="x" id="closeEditProfile">×</button>
       <h2>Редактирование профиля</h2>
 
+      <label>Аватар профиля
+  <input
+    id="profileAvatar"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+  >
+</label>
+
+<div id="avatarPreview" style="margin:10px 0">
+  ${profileData?.avatar_url
+    ? `<img src="${esc(profileData.avatar_url)}"
+        style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
+    : ''}
+</div>
+
       <label>Имя или псевдоним
         <input id="profileName" maxlength="50"
           value="${esc(profileData?.display_name || '')}"
