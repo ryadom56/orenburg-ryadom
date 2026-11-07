@@ -298,7 +298,8 @@ if (deleteAvatarButton) {
       return;
     }
 
-    close('profileModal');
+    $('userProfilePage').style.display = 'none';
+document.querySelector('main.wrap').style.display = '';
     await openProfile();
   });
 }
@@ -504,7 +505,8 @@ if (avatarFile && profileData?.avatar_url) {
 }
     
     close('editProfileModal');
-    close('profileModal');
+    $('userProfilePage').style.display = 'none';
+document.querySelector('main.wrap').style.display = '';
     await openProfile();
   });
 });
@@ -719,7 +721,8 @@ if (file) {
       if (!confirm('Выйти из аккаунта?')) return;
       const {error} = await db.auth.signOut();
       if (error) { alert(error.message); return; }
-      close('profileModal');
+      $('userProfilePage').style.display = 'none';
+document.querySelector('main.wrap').style.display = '';
       await syncUser();
     });
   }
