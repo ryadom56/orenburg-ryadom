@@ -880,6 +880,10 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
 </button>
       ${user && user.id === x.user_id ? '<button id="deleteListing" class="btn danger">Удалить объявление</button>' : ''}`;
 
+$('sellerProfileOpen').addEventListener('click', () => {
+  openSellerProfile(x.user_id);
+});
+    
     if ($('deleteListing')) $('deleteListing').addEventListener('click', async () => {
       if (!confirm('Удалить объявление?')) return;
       const {error} = await db.from('listings').delete().eq('id',x.id);
