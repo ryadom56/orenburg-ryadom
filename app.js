@@ -150,13 +150,34 @@ console.error('Ошибка загрузки профиля:', profileError);
     </div>
 
     <div style="padding:15px;background:#f7f8fa;border-radius:12px">
-      <h3>Контакты</h3>
-      <p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
-      <p><b>Телефон:</b> ${esc(profileData?.phone || 'Не указан')}</p>
-      <p><b>Telegram:</b> ${esc(profileData?.telegram || 'Не указан')}</p>
-      <p><b>WhatsApp:</b> ${esc(profileData?.whatsapp || 'Не указан')}</p>
-      <p><b>VK:</b> ${esc(profileData?.vk || 'Не указан')}</p>
-    </div>
+     <h3>Контакты</h3>
+
+<p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
+
+<p><b>Телефон:</b>
+  ${profileData?.phone
+    ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
+    : 'Не указан'}
+</p>
+
+<p><b>Telegram:</b>
+  ${profileData?.telegram
+    ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
+    : 'Не указан'}
+</p>
+
+<p><b>WhatsApp:</b>
+  ${profileData?.whatsapp
+    ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
+    : 'Не указан'}
+</p>
+
+<p><b>VK:</b>
+  ${profileData?.vk
+    ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
+    : 'Не указан'}
+</p>
+</div>
 
     <button type="button" id="editProfileOpen" class="btn full" style="margin:15px 0">
       Редактировать профиль
