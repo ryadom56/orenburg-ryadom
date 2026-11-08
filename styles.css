@@ -467,3 +467,16 @@
     font-size: 11px;
   }
 }
+
+.section-head {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#listingHeading,
+#status,
+#sort {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
