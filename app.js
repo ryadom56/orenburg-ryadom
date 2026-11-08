@@ -1360,7 +1360,7 @@ async function startConversation(listing) {
   $('searchBtn').addEventListener('click',render);
   $('search').addEventListener('keydown',e => { if(e.key === 'Enter') render(); });
   $('category').addEventListener('change',render);
-  $('sort').addEventListener('change',render);
+  $('sort')?.addEventListener('change',render);
 
   if (db) db.auth.onAuthStateChange(() => syncUser());
   syncUser();
