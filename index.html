@@ -128,6 +128,63 @@
   </form>
 </div>
 
+  <section id="userProfilePage" class="wrap" style="display:none;padding-top:30px">
+  <button type="button" id="profileBack" class="btn light">← Назад к объявлениям</button>
+  <div id="userProfileContent"></div>
+</section>
+
+<div id="listingModal" class="modal">
+  <form id="listingForm" class="dialog">
+    <button type="button" class="x" data-close="listingModal">×</button>
+
+    <h2>Разместить объявление</h2>
+
+    <label>
+      Название объявления
+      <input id="title" type="text" required placeholder="Например, iPhone 13">
+    </label>
+
+    <label>
+      Цена
+      <input id="price" type="number" min="0" required placeholder="Цена в рублях">
+    </label>
+
+    <label>
+      Категория
+      <select id="newCategory" required>
+        <option value="">Выбери категорию</option>
+        <option>Авто и запчасти</option>
+        <option>Недвижимость</option>
+        <option>Электроника</option>
+        <option>Одежда и обувь</option>
+        <option>Дом и ремонт</option>
+        <option>Работа</option>
+        <option>Услуги</option>
+        <option>Животные</option>
+        <option>Разное</option>
+      </select>
+    </label>
+
+    <label>
+      Описание
+      <textarea id="description" required placeholder="Расскажи подробнее о товаре"></textarea>
+    </label>
+
+    <label>
+      Контакт для связи
+      <input id="contact" type="text" required placeholder="Телефон или другой контакт">
+    </label>
+
+    <label>
+      Фотография
+      <input id="photo" type="file" accept="image/*">
+    </label>
+
+    <button class="btn primary full" type="submit">Опубликовать</button>
+
+    <p id="listingMessage" class="message"></p>
+  </form>
+</div>
   
 <footer>© <span id="year"></span> Оренбург рядом · Сделано для жителей региона</footer>
 
