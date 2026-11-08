@@ -130,15 +130,15 @@ async function syncUser() {
     return;
   }
 
-  const { data, error } = await db.auth.getUser();
+const { data, error } = await db.auth.getSession();
 
-  if (error) {
-    console.error('Ошибка получения пользователя:', error);
-    return;
-  }
+if (error) {
+  console.error('Ошибка получения сессии:', error);
+  return;
+}
 
-  user = data.user;
-
+user = data.session?.user || null;
+  
   favorites.clear();
 
   if (user) {
