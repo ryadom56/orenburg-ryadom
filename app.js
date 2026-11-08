@@ -776,17 +776,30 @@ $('listingPageBack').addEventListener('click', () => {
 });
   
   $('loginOpen').addEventListener('click', async () => {
-    await syncUser();
-    if (user) {
+  await syncUser();
+
+  if (user) {
+    if (window.matchMedia('(max-width: 650px)').matches) {
+      $('accountMenu').classList.toggle('open');
+    } else {
       await openProfile();
-      return;
     }
-    signup = false;
-    $('authTitle').textContent = 'Вход';
-    $('toggleAuth').textContent = 'Нет аккаунта? Зарегистрироваться';
-    $('authMessage').textContent = '';
-    open('authModal');
-  });
+    return;
+  }
+
+  $('accountMenu')?.classList.remove('open');
+
+  signup = false;
+  $('authTitle').textContent = 'Вход';
+  $('toggleAuth').textContent = 'Нет аккаунта? Зарегистрироваться';
+  $('authMessage').textContent = '';
+  open('authModal');
+});
+
+$('profileMenuOpen').addEventListener('click', async () => {
+  $('accountMenu').classList.remove('open');
+  await openProfile();
+});
 
   $('favoritesOpen').addEventListener('click', async () => {
   await syncUser();
@@ -1353,3 +1366,9 @@ async function startConversation(listing) {
   syncUser();
   load();
 })();
+
+['messagesOpen', 'favoritesOpen'].forEach(id => {
+  $(id)?.addEventListener('click', () => {
+    $('accountMenu')?.classList.remove('open');
+  });
+});
