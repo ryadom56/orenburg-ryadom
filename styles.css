@@ -480,3 +480,227 @@
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+
+/* =================================
+   НОВЫЙ ДИЗАЙН — ОРЕНБУРГ РЯДОМ
+================================= */
+
+:root {
+  --ink: #202a2a;
+  --muted: #778381;
+  --line: #e5ece8;
+  --blue: #159b83;
+  --bg: #f5f8f6;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+}
+
+.top {
+  height: 76px;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 3px 18px rgba(25,55,45,.04);
+}
+
+.brand {
+  font-size: 25px;
+  letter-spacing: -1.2px;
+}
+
+.brand span {
+  color: var(--blue);
+}
+
+.btn {
+  border-radius: 13px;
+  padding: 12px 19px;
+  transition: .2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.primary {
+  background: var(--blue);
+  box-shadow: 0 5px 14px rgba(21,155,131,.18);
+}
+
+.primary:hover {
+  background: #10836f;
+}
+
+.light {
+  background: #edf3f0;
+  color: var(--ink);
+}
+
+.light:hover {
+  background: #e2ece7;
+}
+
+.hero {
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: 0 8px 30px rgba(25,55,45,.04);
+}
+
+.eyebrow {
+  color: var(--blue);
+}
+
+.hero h1 span {
+  color: var(--blue);
+}
+
+.searchbar input,
+.searchbar select,
+input,
+textarea,
+select {
+  border: 1px solid #dfe8e3;
+  border-radius: 13px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.searchbar input:focus,
+.searchbar select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(21,155,131,.10);
+}
+
+.section-head {
+  margin-bottom: 22px;
+}
+
+.section-head h2 {
+  font-size: 27px;
+  letter-spacing: -.6px;
+}
+
+.grid {
+  gap: 20px;
+}
+
+.item {
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  box-shadow: 0 3px 12px rgba(25,55,45,.035);
+  transition: transform .22s, box-shadow .22s;
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(25,55,45,.10);
+}
+
+.photo {
+  background: #edf3f0;
+}
+
+.item-body {
+  padding: 16px;
+}
+
+.price {
+  color: #159b83;
+  font-size: 21px;
+  letter-spacing: -.4px;
+}
+
+.item h3 {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.meta {
+  color: #82908b;
+}
+
+.empty {
+  border-radius: 18px;
+  background: #fff;
+}
+
+.dialog {
+  border-radius: 22px;
+  box-shadow: 0 24px 80px rgba(15,35,30,.20);
+}
+
+.profile-card,
+.listing-main-info,
+.listing-seller-card {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 5px 22px rgba(25,55,45,.045);
+}
+
+#userProfilePage,
+#listingPage {
+  background: var(--bg);
+}
+
+.icon-btn {
+  border-color: var(--line);
+  border-radius: 14px;
+  transition: .2s ease;
+}
+
+.icon-btn:hover {
+  background: #eaf5f1;
+  color: var(--blue);
+}
+
+.account-menu {
+  border-radius: 16px;
+}
+
+footer {
+  color: #87938f;
+}
+
+/* Мобильный дизайн */
+
+@media (max-width: 650px) {
+  .top {
+    height: 66px;
+  }
+
+  .brand {
+    font-size: 18px;
+  }
+
+  .hero {
+    border-radius: 19px;
+  }
+
+  .grid {
+    gap: 11px;
+  }
+
+  .item {
+    border-radius: 15px;
+  }
+
+  .item-body {
+    padding: 11px;
+  }
+
+  .price {
+    font-size: 18px;
+  }
+
+  .section-head h2 {
+    font-size: 21px;
+  }
+}
+
