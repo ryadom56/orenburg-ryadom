@@ -1213,6 +1213,7 @@ async function startConversation(listing) {
   }
 
   $('userProfilePage').style.display = 'none';
+  $('listingPage').style.display = 'none';
   $('messagesPage').style.display = 'block';
   document.querySelector('main.wrap').style.display = 'none';
 
