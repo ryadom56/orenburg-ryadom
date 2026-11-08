@@ -275,7 +275,9 @@ ${profileData?.avatar_url
     </button>
   </div>`;
 
-    document.getElementById('userProfilePage').style.display = 'block';
+   $('messagesPage').style.display = 'none';
+$('listingPage').style.display = 'none';
+document.getElementById('userProfilePage').style.display = 'block';
 document.querySelector('main.wrap').style.display = 'none';
 
 const deleteAvatarButton = document.getElementById('deleteAvatar');
