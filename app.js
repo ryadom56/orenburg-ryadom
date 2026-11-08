@@ -1366,9 +1366,3 @@ async function startConversation(listing) {
   syncUser();
   load();
 })();
-
-['messagesOpen', 'favoritesOpen'].forEach(id => {
-  $(id)?.addEventListener('click', () => {
-    $('accountMenu')?.classList.remove('open');
-  });
-});
