@@ -58,7 +58,22 @@
     <button id="searchBtn" class="btn primary">Найти</button>
   </div>
 </section>
-  
+
+<section class="section-head">
+  <div>
+    <h2 id="listingHeading">Свежие объявления</h2>
+    <p id="status">Загружаем объявления…</p>
+  </div>
+
+  <select id="sort">
+    <option value="new">Сначала новые</option>
+    <option value="cheap">Сначала дешевле</option>
+    <option value="expensive">Сначала дороже</option>
+  </select>
+</section>
+
+<section id="grid" class="grid"></section>
+
 <section id="messagesPage" class="wrap" style="display:none;padding-top:30px">
   <button type="button" id="messagesBack" class="btn light">← Назад к объявлениям</button>
   <div class="profile-card" style="margin-top:20px">
