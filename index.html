@@ -94,6 +94,38 @@
   <div id="listingPageContent"></div>
 
 </section>
+
+
+<div id="authModal" class="modal">
+  <form id="authForm" class="dialog">
+    <button type="button" class="x" data-close="authModal">×</button>
+
+    <h2 id="authTitle">Вход</h2>
+
+    <label>
+      Email
+      <input id="email" type="email" required placeholder="you@example.com">
+    </label>
+
+    <label>
+      Пароль
+      <input id="password" type="password" minlength="6" required placeholder="Минимум 6 символов">
+    </label>
+
+    <button class="btn primary full" type="submit">Продолжить</button>
+
+    <button type="button" id="telegramLogin" class="btn light full">
+      <span>✈️ Войти через Telegram</span>
+    </button>
+
+    <button type="button" id="toggleAuth" class="textbtn">
+      Нет аккаунта? Зарегистрироваться
+    </button>
+
+    <p id="authMessage" class="message"></p>
+  </form>
+</div>
+
   
 <footer>© <span id="year"></span> Оренбург рядом · Сделано для жителей региона</footer>
 
