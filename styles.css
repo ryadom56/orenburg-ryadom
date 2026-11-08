@@ -445,3 +445,25 @@
     content: none;
   }
 }
+
+@media (max-width: 650px) {
+  .top {
+    gap: 8px;
+  }
+
+  .brand {
+    font-size: 16px;
+    letter-spacing: -0.7px;
+    white-space: nowrap;
+  }
+
+  .top-actions {
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  #addOpen {
+    padding: 9px 8px;
+    font-size: 11px;
+  }
+}
