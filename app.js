@@ -833,7 +833,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
   render();
 });
 
-  $('toggleAuth').addEventListener('click', () => {
+  $('toggleAuth')?.addEventListener('click', () => {
     signup = !signup;
     $('authTitle').textContent = signup ? 'Регистрация' : 'Вход';
     $('toggleAuth').textContent = signup ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
