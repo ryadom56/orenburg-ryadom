@@ -323,3 +323,125 @@
     width: 100%;
   }
 }
+
+/* Меню профиля */
+.account-menu {
+  display: contents;
+}
+
+.account-menu-item {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+
+#profileMenuOpen {
+  display: none;
+}
+
+/* Иконки на компьютере */
+#messagesOpen,
+#favoritesOpen {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 0;
+}
+
+#messagesOpen::before {
+  content: "✉";
+  font-size: 20px;
+}
+
+#favoritesOpen::before {
+  content: "♡";
+  font-size: 23px;
+}
+
+/* Мобильная версия */
+@media (max-width: 650px) {
+  .top-actions {
+    position: relative;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #addOpen {
+    padding: 10px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  #loginOpen {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  #loginOpen img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .account-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 20;
+    width: 200px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .account-menu.open {
+    display: flex;
+  }
+
+  #profileMenuOpen {
+    display: flex;
+  }
+
+  .account-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px;
+    border-radius: 9px;
+    background: #fff;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .account-menu-item:hover {
+    background: #f0f2f6;
+  }
+
+  #messagesOpen,
+  #favoritesOpen {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 14px;
+  }
+
+  #messagesOpen::before,
+  #favoritesOpen::before {
+    content: none;
+  }
+}
