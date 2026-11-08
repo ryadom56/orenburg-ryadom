@@ -840,7 +840,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
     $('authMessage').textContent = '';
   });
 
-  $('authForm').addEventListener('submit', async e => {
+  $('authForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     if (!db) { $('authMessage').textContent = 'Сначала настрой config.js.'; return; }
     const email = $('email').value;
