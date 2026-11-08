@@ -888,7 +888,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
     open('listingModal');
   });
 
-  $('listingForm').addEventListener('submit', async e => {
+  $('listingForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     if (!user) return;
     const msg = $('listingMessage');
