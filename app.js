@@ -743,7 +743,7 @@ document.querySelector('main.wrap').style.display = '';
     });
   }
 
-$('profileBack').addEventListener('click', () => {
+$('profileBack')?.addEventListener('click', () => {
   $('userProfilePage').style.display = 'none';
   document.querySelector('main.wrap').style.display = '';
 });
