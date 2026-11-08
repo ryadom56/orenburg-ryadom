@@ -858,7 +858,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
     await syncUser();
     close('authModal');
   });
-  $('telegramLogin').addEventListener('click', async () => {
+  $('telegramLogin')?.addEventListener('click', async () => {
   const msg = $('authMessage');
 
   if (!db) {
