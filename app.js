@@ -757,7 +757,7 @@ $('messagesOpen').addEventListener('click', async () => {
     return;
   }
 
-  $('userProfilePage').style.display = 'none';
+  $('userProfilePage')?.style && ($('userProfilePage').style.display = 'none');
   $('messagesPage').style.display = 'block';
   document.querySelector('main.wrap').style.display = 'none';
 
