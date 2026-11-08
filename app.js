@@ -748,6 +748,7 @@ $('profileBack')?.addEventListener('click', () => {
   document.querySelector('main.wrap').style.display = '';
 });
 
+
 $('messagesOpen').addEventListener('click', async () => {
   await syncUser();
 
@@ -757,7 +758,9 @@ $('messagesOpen').addEventListener('click', async () => {
     return;
   }
 
-  $('userProfilePage')?.style && ($('userProfilePage').style.display = 'none');
+  $('accountMenu')?.classList.remove('open');
+  $('userProfilePage').style.display = 'none';
+  $('listingPage').style.display = 'none';
   $('messagesPage').style.display = 'block';
   document.querySelector('main.wrap').style.display = 'none';
 
@@ -765,17 +768,16 @@ $('messagesOpen').addEventListener('click', async () => {
 });
 
 $('messagesBack').addEventListener('click', () => {
+  $('messagesPage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+});
 
 $('listingPageBack').addEventListener('click', () => {
   $('listingPage').style.display = 'none';
   document.querySelector('main.wrap').style.display = '';
 });
-  
-  $('messagesPage').style.display = 'none';
-  document.querySelector('main.wrap').style.display = '';
-});
-  
-  $('loginOpen').addEventListener('click', async () => {
+
+$('loginOpen').addEventListener('click', async () => {
   await syncUser();
 
   if (user) {
@@ -798,10 +800,12 @@ $('listingPageBack').addEventListener('click', () => {
 
 $('profileMenuOpen').addEventListener('click', async () => {
   $('accountMenu').classList.remove('open');
+  $('messagesPage').style.display = 'none';
+  $('listingPage').style.display = 'none';
   await openProfile();
 });
 
-  $('favoritesOpen').addEventListener('click', async () => {
+$('favoritesOpen').addEventListener('click', async () => {
   await syncUser();
 
   if (!user) {
@@ -809,18 +813,31 @@ $('profileMenuOpen').addEventListener('click', async () => {
     return;
   }
 
-  showingFavorites = !showingFavorites;
-  if (showingFavorites) {
-  $('search').value = '';
-  $('category').value = '';
-  $('sort').value = 'new';
-}
+  const main = document.querySelector('main.wrap');
 
-    $('listingHeading').textContent = showingFavorites
-  ? 'Избранные объявления'
-  : 'Свежие объявления';
-    
-$('heroSection').style.display = showingFavorites ? 'none' : '';
+  const alreadyOnFavorites =
+    main.style.display !== 'none' && showingFavorites;
+
+  showingFavorites = !alreadyOnFavorites;
+
+  $('accountMenu')?.classList.remove('open');
+  $('messagesPage').style.display = 'none';
+  $('listingPage').style.display = 'none';
+  $('userProfilePage').style.display = 'none';
+
+  main.style.display = '';
+
+  if (showingFavorites) {
+    $('search').value = '';
+    $('category').value = '';
+    $('sort').value = 'new';
+  }
+
+  $('listingHeading').textContent = showingFavorites
+    ? 'Избранные объявления'
+    : 'Свежие объявления';
+
+  $('heroSection').style.display = showingFavorites ? 'none' : '';
 
   $('favoritesOpen').textContent = showingFavorites
     ? '← Все объявления'
@@ -832,6 +849,7 @@ $('heroSection').style.display = showingFavorites ? 'none' : '';
 
   render();
 });
+
 
   $('toggleAuth')?.addEventListener('click', () => {
     signup = !signup;
