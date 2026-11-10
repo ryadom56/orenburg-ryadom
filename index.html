@@ -46,22 +46,33 @@
 <main class="wrap">
  <section class="hero" id="heroSection">
   <div class="searchbar">
-    <input id="search" placeholder="Что ищем? Например, iPhone или диван">
+  <input id="search" placeholder="Что ищем? Например, iPhone или диван">
 
-    <select id="category">
-      <option value="">Все категории</option>
-      <option>Авто и запчасти</option>
-      <option>Недвижимость</option>
-      <option>Электроника</option>
-      <option>Одежда и обувь</option>
-      <option>Дом и ремонт</option>
-      <option>Работа</option>
-      <option>Услуги</option>
-      <option>Животные</option>
-      <option>Разное</option>
-    </select>
+<select id="category">
+  <option value="">Все категории</option>
+  <option>Авто и запчасти</option>
+  <option>Недвижимость</option>
+  <option>Электроника</option>
+  <option>Одежда и обувь</option>
+  <option>Дом и ремонт</option>
+  <option>Работа</option>
+  <option>Услуги</option>
+  <option>Животные</option>
+  <option>Разное</option>
+</select>
 
-    <button id="searchBtn" class="btn primary">Найти</button>
+<input id="minPrice" type="number" min="0" placeholder="Цена от, ₽">
+
+<input id="maxPrice" type="number" min="0" placeholder="Цена до, ₽">
+
+<select id="sort">
+  <option value="new">Сначала новые</option>
+  <option value="cheap">Сначала дешевле</option>
+  <option value="expensive">Сначала дороже</option>
+</select>
+
+<button id="searchBtn" class="btn primary">Найти</button>
+<button id="resetFilters" class="btn">Сбросить</button>
   </div>
 </section>
 
