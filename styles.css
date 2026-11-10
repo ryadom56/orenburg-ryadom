@@ -3040,3 +3040,110 @@ body {
     animation: none;
   }
 }
+
+
+/* =====================================
+   ЕДИНОЕ ВЫПАДАЮЩЕЕ МЕНЮ ПРОФИЛЯ
+   ПК + МОБИЛЬНЫЕ УСТРОЙСТВА
+===================================== */
+
+.top-actions {
+  position: relative;
+  align-items: center;
+}
+
+.account-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 20;
+  width: 230px;
+  padding: 8px;
+  flex-direction: column;
+  gap: 4px;
+  background: #152235;
+  border: 1px solid #29394d;
+  border-radius: 15px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, .35);
+}
+
+.account-menu.open {
+  display: flex;
+  animation: accountMenuAppear .18s ease both;
+}
+
+.account-menu-item,
+#profileMenuOpen,
+#messagesOpen,
+#favoritesOpen {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #edf4fc;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.account-menu-item:hover {
+  background: #22364e;
+  color: #38aaff;
+}
+
+#messagesOpen::before,
+#favoritesOpen::before {
+  content: none;
+}
+
+#loginOpen {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  padding: 3px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+#loginOpen img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@keyframes accountMenuAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Мобильная адаптация */
+
+@media (max-width: 650px) {
+  .account-menu {
+    top: calc(100% + 10px);
+    right: 0;
+    width: 210px;
+  }
+
+  #loginOpen {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+  }
+}
