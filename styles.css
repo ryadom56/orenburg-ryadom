@@ -1328,12 +1328,19 @@ footer {
 .profile-background {
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   border-radius: 18px;
   padding: 1px;
 }
 
 @media (max-width: 600px) {
+  .profile-background {
+    background-attachment: scroll;
+    background-position: center;
+    background-size: cover;
+  }
+
   .profile-card {
     margin: 10px;
     padding: 12px;
@@ -1341,8 +1348,14 @@ footer {
   }
 
   .profile-cover {
+    display: block;
+    width: 100%;
+    min-height: 175px;
     height: 175px;
     margin: -12px -12px 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 17px 17px 0 0;
   }
 
@@ -1376,7 +1389,6 @@ footer {
     grid-template-columns: 1fr;
   }
 }
-
 
 /* =========================================
    НОВАЯ АДАПТИВНАЯ СТРАНИЦА ОБЪЯВЛЕНИЯ
