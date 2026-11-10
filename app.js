@@ -247,6 +247,7 @@ async function syncUser() {
   }
 
   user = data.session?.user || null;
+  setupMessagesRealtime();
   favorites.clear();
 
   if (user) {
