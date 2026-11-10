@@ -67,6 +67,7 @@ async function toggleFavorite(id) {
   
  
 
+
 function render() {
   const q = $('search').value.trim().toLowerCase();
   const cat = $('category').value;
@@ -84,31 +85,54 @@ function render() {
     Number(x.price) <= maxPrice
   );
 
-  if (sort === 'cheap') rows.sort((a,b) => a.price-b.price);
-  else if (sort === 'expensive') rows.sort((a,b) => b.price-a.price);
-  else rows.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+  if (sort === 'cheap') rows.sort((a, b) => a.price - b.price);
+  else if (sort === 'expensive') rows.sort((a, b) => b.price - a.price);
+  else rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   $('grid').innerHTML = rows.length ? rows.map(x => `
     <article class="item" data-id="${esc(x.id)}">
-      <div class="photo" style="position:relative">
-        ${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не добавлено'}
+
+      <div class="item-media">
+        ${x.photo_url
+          ? `<img src="${esc(x.photo_url)}" alt="${esc(x.title)}" loading="lazy">`
+          : `<div class="photo-placeholder">
+              <span>Нет фотографии</span>
+            </div>`
+        }
+
+        <span class="item-category">${esc(x.category)}</span>
 
         <button
           type="button"
           class="favorite-btn"
           data-id="${esc(x.id)}"
-          style="position:absolute;top:10px;right:10px;z-index:2;background:white;border:0;border-radius:50%;width:38px;height:38px;font-size:23px;cursor:pointer;color:${favorites.has(String(x.id)) ? '#e11d48' : '#777'}"
-          aria-label="Добавить в избранное"
+          aria-label="${favorites.has(String(x.id)) ? 'Убрать из избранного' : 'Добавить в избранное'}"
         >${favorites.has(String(x.id)) ? '♥' : '♡'}</button>
       </div>
 
       <div class="item-body">
-        <div class="price">${rub(x.price)}</div>
+
+        <div class="item-price-row">
+          <div class="price">${rub(x.price)}</div>
+        </div>
+
         <h3>${esc(x.title)}</h3>
-        <div class="meta">${esc(x.category)} · Оренбург</div>
+
+        <div class="item-location">
+          <span>⌖</span>
+          <span>Оренбург</span>
+        </div>
+
       </div>
     </article>
-  `).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений по заданным фильтрам не найдено.'}</div>`;
+  `).join('') : `
+    <div class="empty">
+      ${showingFavorites
+        ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.'
+        : 'Объявлений по заданным фильтрам не найдено.'
+      }
+    </div>
+  `;
 
   $('grid').querySelectorAll('.favorite-btn').forEach(button => {
     button.addEventListener('click', async e => {
