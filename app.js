@@ -231,81 +231,113 @@ console.error('Ошибка загрузки профиля:', profileError);
 }
     
    
+
 profile.innerHTML = `
-  <div class="profile-card">
-    <button type="button" class="x" data-profile-close>×</button>
+  <div class="profile-background">
+    <div class="profile-card">
+      <button type="button" class="x" data-profile-close>×</button>
 
-    <div style="text-align:center;padding:20px 10px">
-      ${profileData?.avatar_url
-        ? `<img src="${esc(profileData.avatar_url)}" alt="Аватар"
-          style="width:110px;height:110px;border-radius:50%;object-fit:cover">`
-        : `<div style="width:110px;height:110px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:42px">👤</div>`}
+      <div class="profile-cover"></div>
+
+      <div class="profile-header">
+        ${profileData?.avatar_url
+          ? `<img src="${esc(profileData.avatar_url)}" alt="Аватар" class="profile-avatar">`
+          : `<div class="profile-avatar profile-avatar-placeholder">👤</div>`}
+
+        <div class="profile-heading">
+          <h2>${esc(profileData?.display_name || 'Пользователь')}</h2>
+          <p>${esc(profileData?.about || 'Расскажи немного о себе')}</p>
+        </div>
+      </div>
 
       ${profileData?.avatar_url
-        ? `<button type="button" id="deleteAvatar" class="btn danger" style="margin:10px">
-             Удалить аватар
-           </button>`
+        ? `<div style="text-align:center;margin-top:12px">
+             <button type="button" id="deleteAvatar" class="btn danger">
+               Удалить аватар
+             </button>
+           </div>`
         : ''}
 
-      <h2>${esc(profileData?.display_name || 'Пользователь')}</h2>
-      <p>${esc(profileData?.about || 'Расскажи немного о себе')}</p>
+      <div class="profile-content">
+
+        <section class="profile-section">
+          <h3>Контакты</h3>
+
+          <div class="profile-contacts">
+            <div class="profile-contact">
+              <b>Email</b>
+              ${esc(user.email || 'Не указан')}
+            </div>
+
+            <div class="profile-contact">
+              <b>Телефон</b>
+              ${profileData?.phone
+                ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
+                : 'Не указан'}
+            </div>
+
+            <div class="profile-contact">
+              <b>Telegram</b>
+              ${profileData?.telegram
+                ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
+                : 'Не указан'}
+            </div>
+
+            <div class="profile-contact">
+              <b>WhatsApp</b>
+              ${profileData?.whatsapp
+                ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
+                : 'Не указан'}
+            </div>
+
+            <div class="profile-contact">
+              <b>VK</b>
+              ${profileData?.vk
+                ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
+                : 'Не указан'}
+            </div>
+          </div>
+        </section>
+
+        <button
+          type="button"
+          id="moderationOpen"
+          class="btn primary full"
+          style="display:none;margin-top:20px"
+        >
+          🛡 Модерация объявлений
+        </button>
+
+        <button type="button" id="editProfileOpen" class="btn full" style="margin:20px 0">
+          Редактировать профиль
+        </button>
+
+        <section class="profile-section">
+          <div class="section-head">
+            <h3>Мои объявления</h3>
+            <b id="myCount">Загружаем…</b>
+          </div>
+
+          <div id="myListings" class="profile-listings"></div>
+        </section>
+
+        <button type="button" id="profileLogout" class="btn light full">
+          Выйти из аккаунта
+        </button>
+
+      </div>
     </div>
-
-    <div style="padding:15px;background:#f7f8fa;border-radius:12px">
-      <h3>Контакты</h3>
-
-      <p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
-
-      <p><b>Телефон:</b>
-        ${profileData?.phone
-          ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
-          : 'Не указан'}
-      </p>
-
-      <p><b>Telegram:</b>
-        ${profileData?.telegram
-          ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
-          : 'Не указан'}
-      </p>
-
-      <p><b>WhatsApp:</b>
-        ${profileData?.whatsapp
-          ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
-          : 'Не указан'}
-      </p>
-
-      <p><b>VK:</b>
-        ${profileData?.vk
-          ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
-          : 'Не указан'}
-      </p>
-    </div>
-
-    <button
-      type="button"
-      id="moderationOpen"
-      class="btn primary full"
-      style="display:none;margin-top:15px"
-    >
-      🛡 Модерация объявлений
-    </button>
-
-    <button type="button" id="editProfileOpen" class="btn full" style="margin:15px 0">
-      Редактировать профиль
-    </button>
-
-    <div class="section-head">
-      <h3>Мои объявления</h3>
-      <b id="myCount">Загружаем…</b>
-    </div>
-
-    <div id="myListings"></div>
-
-    <button type="button" id="profileLogout" class="btn light full">
-      Выйти из аккаунта
-    </button>
   </div>`;
 
+const profileCover = profile.querySelector('.profile-cover');
+if (profileCover && profileData?.cover_url) {
+  profileCover.style.backgroundImage = `url("${profileData.cover_url}")`;
+}
+
+const profileBackground = profile.querySelector('.profile-background');
+if (profileBackground && profileData?.background_url) {
+  profileBackground.style.backgroundImage = `url("${profileData.background_url}")`;
+}
 
 const { data: profileIsAdmin, error: profileAdminError } =
   await db.rpc('is_listing_admin');
