@@ -613,7 +613,8 @@ editButton.addEventListener('click', () => {
     document.body.appendChild(editModal);
   }
 
-  editModal.innerHTML = `
+ 
+editModal.innerHTML = `
     <form class="dialog" id="editProfileForm" style="max-width:500px">
       <button type="button" class="x" id="closeEditProfile">×</button>
       <h2>Редактирование профиля</h2>
@@ -627,6 +628,11 @@ editButton.addEventListener('click', () => {
           ? `<img src="${esc(profileData.avatar_url)}" style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
           : ''}
       </div>
+
+      ${profileData?.avatar_url
+        ? `<button type="button" id="deleteAvatar" class="btn light">Удалить аватар</button>`
+        : ''
+      }
 
       <label>Обложка профиля
         <input id="profileCover" type="file" accept="image/jpeg,image/png,image/webp">
@@ -693,6 +699,7 @@ editButton.addEventListener('click', () => {
   document.getElementById('closeEditProfile').addEventListener('click', () => {
     close('editProfileModal');
   });
+
 
   function setupProfileImagePreview(inputId, previewId, isAvatar = false) {
     const input = document.getElementById(inputId);
