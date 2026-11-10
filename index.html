@@ -134,78 +134,73 @@
 </section>
 
 <div id="listingModal" class="modal">
-  <form id="listingForm" class="dialog">
-    <button type="button" class="x" data-close="listingModal">×</button>
+ 
+<form id="listingForm" class="dialog">
+  <button type="button" class="x" data-close="listingModal">×</button>
 
-    <h2>Разместить объявление</h2>
+  <h2>Разместить объявление</h2>
 
-    <label>
-      Название объявления
-      <input id="title" type="text" required placeholder="Например, iPhone 13">
-    </label>
+  <label>
+    Название объявления
+    <input id="title" type="text" required placeholder="Например, iPhone 13">
+  </label>
 
-    <label>
-      Цена
-      <input id="price" type="number" min="0" required placeholder="Цена в рублях">
-    </label>
+  <label>
+    Цена
+    <input id="price" type="number" min="0" required placeholder="Цена в рублях">
+  </label>
 
-    <label>
-      Категория
-      <select id="newCategory" required>
-        <option value="">Выбери категорию</option>
-        <option>Авто и запчасти</option>
-        <option>Недвижимость</option>
-        <option>Электроника</option>
-        <option>Одежда и обувь</option>
-        <option>Дом и ремонт</option>
-        <option>Работа</option>
-        <option>Услуги</option>
-        <option>Животные</option>
-        <option>Разное</option>
-      </select>
-    </label>
+  <label>
+    Категория
+    <select id="newCategory" required>
+      <option value="">Выбери категорию</option>
+      <option>Авто и запчасти</option>
+      <option>Недвижимость</option>
+      <option>Электроника</option>
+      <option>Одежда и обувь</option>
+      <option>Дом и ремонт</option>
+      <option>Работа</option>
+      <option>Услуги</option>
+      <option>Животные</option>
+      <option>Разное</option>
+    </select>
+  </label>
 
-    <label>
-      Описание
-      <textarea id="description" required placeholder="Расскажи подробнее о товаре"></textarea>
-    </label>
+  <label>
+    Описание
+    <textarea id="description" required placeholder="Расскажи подробнее о товаре"></textarea>
+  </label>
 
-   
-<label>
-  Фотографии (до 10 штук)
-  <input
-    id="photo"
-    type="file"
-    accept="image/jpeg,image/png,image/webp,image/gif"
-    multiple
-  >
-  <small>Можно выбрать сразу несколько фотографий.</small>
-</label>
+  <label>
+    Фотографии (до 10 штук)
+    <input
+      id="photo"
+      type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif"
+      multiple
+    >
+    <small>Можно выбрать сразу несколько фотографий.</small>
+  </label>
 
-<div id="photoPreview" class="media-preview"></div>
+  <div id="photoPreview" class="media-preview"></div>
 
-<label>
-  Видео (до 50 МБ)
-  <input
-    id="video"
-    type="file"
-    accept="video/mp4,video/webm,video/quicktime"
-  >
-  <small>Можно добавить один видеоролик.</small>
-</label>
+  <label>
+    Видео (до 50 МБ)
+    <input
+      id="video"
+      type="file"
+      accept="video/mp4,video/webm,video/quicktime"
+    >
+    <small>Можно добавить один видеоролик.</small>
+  </label>
 
-<div id="videoPreview" class="media-preview"></div>
+  <div id="videoPreview" class="media-preview"></div>
 
+  <button class="btn primary full" type="submit">Опубликовать</button>
 
-    <label>
-      Фотография
-      <input id="photo" type="file" accept="image/*">
-    </label>
+  <p id="listingMessage" class="message"></p>
+</form>
 
-    <button class="btn primary full" type="submit">Опубликовать</button>
-
-    <p id="listingMessage" class="message"></p>
-  </form>
 </div>
   
 <footer>© <span id="year"></span> Оренбург рядом · Сделано для жителей региона</footer>
