@@ -1799,6 +1799,7 @@ async function loadConversations() {
 }
 
 
+
 async function openChat(conversationId) {
   const chat = $('chatWindow');
   const list = $('conversationsList');
@@ -1849,10 +1850,24 @@ async function openChat(conversationId) {
     <p id="messageStatus" class="message"></p>
   `;
 
-  $('chatBack').addEventListener('click', () => {
+  $('chatBack').addEventListener('click', async () => {
     chat.style.display = 'none';
     list.style.display = 'block';
+    await loadConversations();
   });
+
+  async function markMessagesRead() {
+    const { error } = await db
+      .from('messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('conversation_id', conversationId)
+      .neq('sender_id', user.id)
+      .is('read_at', null);
+
+    if (error) {
+      console.error('Ошибка отметки прочтения:', error);
+    }
+  }
 
   async function refreshMessages() {
     const { data, error } = await db
@@ -1874,6 +1889,7 @@ async function openChat(conversationId) {
           ${esc(message.body)}
           <div style="font-size:11px;color:#747b88;margin-top:5px">
             ${new Date(message.created_at).toLocaleString('ru-RU')}
+            ${message.sender_id === user.id && message.read_at ? ' · Прочитано' : ''}
           </div>
         </div>
       </div>
@@ -1882,6 +1898,7 @@ async function openChat(conversationId) {
     box.scrollTop = box.scrollHeight;
   }
 
+  await markMessagesRead();
   await refreshMessages();
 
   $('messageForm').addEventListener('submit', async e => {
