@@ -449,14 +449,6 @@ profile.innerHTML = `
         </div>
       </div>
 
-      ${profileData?.avatar_url
-        ? `<div style="text-align:center;margin-top:12px">
-             <button type="button" id="deleteAvatar" class="btn danger">
-               Удалить аватар
-             </button>
-           </div>`
-        : ''}
-
       <div class="profile-content">
 
         <section class="profile-section">
