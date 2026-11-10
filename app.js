@@ -1015,38 +1015,134 @@ listingVideoInput.addEventListener('change', () => {
 });
 
   
-  $('listingForm')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    if (!user) return;
-    const msg = $('listingMessage');
-    msg.textContent = 'Публикуем…';
-    let photo_url = null;
-    const file = $('photo').files[0];
+ 
+$('listingForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
 
-    if (file) {
-      if (file.size > 5*1024*1024) { msg.textContent = 'Фото должно быть не больше 5 МБ.'; return; }
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const up = await db.storage.from('listing-photos').upload(path,file,{upsert:false,contentType:file.type});
-      if (up.error) { msg.textContent = 'Ошибка загрузки фото: ' + up.error.message; return; }
-      photo_url = db.storage.from('listing-photos').getPublicUrl(path).data.publicUrl;
+  if (!user) return;
+
+  const msg = $('listingMessage');
+  msg.textContent = 'Публикуем объявление...';
+
+  const photoFiles = Array.from($('photo').files);
+  const videoFile = $('video').files[0];
+
+  if (photoFiles.length > 10) {
+    msg.textContent = 'Можно загрузить не больше 10 фотографий.';
+    return;
+  }
+
+  for (const file of photoFiles) {
+    if (!file.type.startsWith('image/')) {
+      msg.textContent = 'Выбранный файл не является фотографией.';
+      return;
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      msg.textContent = `Фото ${file.name} больше 5 МБ.`;
+      return;
+    }
+  }
+
+  if (videoFile) {
+    if (!videoFile.type.startsWith('video/')) {
+      msg.textContent = 'Выбранный файл не является видео.';
+      return;
+    }
+
+    if (videoFile.size > 50 * 1024 * 1024) {
+      msg.textContent = 'Видео должно быть не больше 50 МБ.';
+      return;
+    }
+  }
+
+  const photo_urls = [];
+  let video_url = null;
+  const uploadedPaths = [];
+
+  const storage = db.storage.from('listing-photos');
+
+  try {
+    for (let i = 0; i < photoFiles.length; i++) {
+      const file = photoFiles[i];
+
+      msg.textContent = `Загружаем фотографию ${i + 1} из ${photoFiles.length}...`;
+
+      const ext = (file.name.split('.').pop() || 'jpg')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+      const up = await storage.upload(path, file, {
+        upsert: false,
+        contentType: file.type
+      });
+
+      if (up.error) throw new Error(up.error.message);
+
+      uploadedPaths.push(path);
+
+      const url = storage.getPublicUrl(path).data.publicUrl;
+      photo_urls.push(url);
+    }
+
+    if (videoFile) {
+      msg.textContent = 'Загружаем видео...';
+
+      const ext = (videoFile.name.split('.').pop() || 'mp4')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+      const up = await storage.upload(path, videoFile, {
+        upsert: false,
+        contentType: videoFile.type
+      });
+
+      if (up.error) throw new Error(up.error.message);
+
+      uploadedPaths.push(path);
+
+      video_url = storage.getPublicUrl(path).data.publicUrl;
+    }
+
+    msg.textContent = 'Сохраняем объявление...';
+
     const row = {
-      user_id:user.id,
-      title:$('title').value.trim(),
-      price:Number($('price').value),
-      category:$('newCategory').value,
-      description:$('description').value.trim(),
-      contact:$('contact').value.trim(),
-      photo_url
+      user_id: user.id,
+      title: $('title').value.trim(),
+      price: Number($('price').value),
+      category: $('newCategory').value,
+      description: $('description').value.trim(),
+      contact: $('contact').value.trim(),
+      photo_url: photo_urls[0] || null,
+      photo_urls,
+      video_url
     };
-    const {error} = await db.from('listings').insert(row);
-    if (error) { msg.textContent = 'Ошибка публикации: ' + error.message; return; }
+
+    const { error } = await db.from('listings').insert(row);
+
+    if (error) throw new Error(error.message);
+
     $('listingForm').reset();
+
+    renderListingPhotoPreview();
+    renderListingVideoPreview();
+
     close('listingModal');
     await load();
-  });
+
+  } catch (error) {
+    if (uploadedPaths.length) {
+      await storage.remove(uploadedPaths);
+    }
+
+    msg.textContent = 'Ошибка публикации: ' + error.message;
+  }
+});
+
 
 async function openSellerProfile(userId) {
   const content = $('userProfileContent');
