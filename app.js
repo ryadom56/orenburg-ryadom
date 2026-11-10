@@ -201,6 +201,7 @@ let messagesRealtimeChannel = null;
 let messagesRealtimeUserId = null;
 
 
+
 function setupMessagesRealtime() {
   if (!db || !user) {
     if (messagesRealtimeChannel) {
@@ -235,6 +236,8 @@ function setupMessagesRealtime() {
         table: 'messages'
       },
       async (payload) => {
+        console.log('Realtime: получено новое сообщение', payload.new);
+
         const newMessage = payload.new;
 
         if (!newMessage || newMessage.sender_id === user?.id) {
@@ -246,8 +249,10 @@ function setupMessagesRealtime() {
         if ($('messagesPage')?.style.display === 'block') {
           if (
             $('chatWindow')?.style.display === 'block' &&
-            window.activeConversationId === newMessage.conversation_id
+            String(window.activeConversationId) === String(newMessage.conversation_id)
           ) {
+            console.log('Realtime: обновляем открытый диалог');
+
             if (window.refreshActiveChat) {
               await window.refreshActiveChat();
             }
@@ -261,7 +266,6 @@ function setupMessagesRealtime() {
       console.log('Статус уведомлений:', status);
     });
 }
-
 
 async function syncUser() {
   const accountButton = $('loginOpen');
