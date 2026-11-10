@@ -647,34 +647,40 @@ const updates = {
   updated_at: new Date().toISOString()
 };
 
-    const { error } = await db
-      .from('profiles')
-      .update(updates)
-      .eq('id', user.id);
+const { error } = await db
+  .from('profiles')
+  .update(updates)
+  .eq('id', user.id);
 
-    saveButton.disabled = false;
+saveButton.disabled = false;
 
-    if (error) {
-      message.textContent = 'Ошибка: ' + error.message;
-      return;
-    }
+if (error) {
+  message.textContent = 'Ошибка: ' + error.message;
+  return;
+}
 
-if (avatarFile && profileData?.avatar_url) {
+async function removeOldProfileImage(oldUrl, newFile) {
+  if (!newFile || !oldUrl) return;
+
   const marker = '/avatars/';
   const oldPath = decodeURIComponent(
-    profileData.avatar_url.split(marker)[1] || ''
+    oldUrl.split(marker)[1] || ''
   );
 
-  if (oldPath) {
-    const { error: removeError } = await db.storage
-      .from('avatars')
-      .remove([oldPath]);
+  if (!oldPath) return;
 
-    if (removeError) {
-      console.warn('Не удалось удалить старый аватар:', removeError);
-    }
+  const { error: removeError } = await db.storage
+    .from('avatars')
+    .remove([oldPath]);
+
+  if (removeError) {
+    console.warn('Не удалось удалить старое изображение:', removeError);
   }
 }
+
+await removeOldProfileImage(profileData?.avatar_url, avatarFile);
+await removeOldProfileImage(profileData?.cover_url, coverFile);
+await removeOldProfileImage(profileData?.background_url, backgroundFile);
     
     close('editProfileModal');
     $('userProfilePage').style.display = 'none';
