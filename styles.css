@@ -595,26 +595,50 @@ select:focus {
   letter-spacing: -.6px;
 }
 
-/* Карточки объявлений */
+
+/* Современные карточки объявлений */
 
 .grid {
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
 }
 
 .item {
-  border: 1px solid var(--line);
-  border-radius: 19px;
-  box-shadow: 0 3px 12px rgba(24,36,60,.035);
-  transition: transform .22s, box-shadow .22s;
+  background: #fff;
+  border: 1px solid #e9edf4;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgba(25, 40, 70, .045);
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(24,36,60,.10);
+  box-shadow: 0 14px 32px rgba(25, 40, 70, .12);
 }
 
 .photo {
-  background: #eef1f6;
+  height: 210px;
+  background: #f0f2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #929baa;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.item:hover .photo img {
+  transform: scale(1.04);
 }
 
 .item-body {
@@ -622,24 +646,79 @@ select:focus {
 }
 
 .price {
-  color: var(--blue);
-  font-size: 21px;
-  letter-spacing: -.4px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: -.6px;
+  margin-bottom: 8px;
 }
 
 .item h3 {
   font-size: 15px;
   line-height: 1.45;
+  font-weight: 650;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .meta {
   color: var(--muted);
+  font-size: 12px;
 }
 
 .empty {
-  border-radius: 18px;
+  grid-column: 1 / -1;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
   background: #fff;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
 }
+
+/* Адаптация карточек под телефон */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .photo {
+    height: 185px;
+  }
+}
+
+@media (max-width: 650px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+
+  .item {
+    border-radius: 16px;
+  }
+
+  .photo {
+    height: 155px;
+  }
+
+  .item-body {
+    padding: 12px;
+  }
+
+  .price {
+    font-size: 19px;
+  }
+
+  .item h3 {
+    font-size: 13px;
+  }
+}
+
 
 /* Модальные окна и страницы */
 
