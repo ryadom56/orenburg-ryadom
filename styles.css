@@ -1825,3 +1825,575 @@ footer {
 .footer-telegram svg {
   flex-shrink: 0;
 }
+
+
+/* =========================================
+   ORENBURG RYADOM — DARK PREMIUM BLUE
+   Основная тёмная тема
+========================================= */
+
+:root {
+  color-scheme: dark;
+
+  --ink: #edf4fc;
+  --muted: #91a3b8;
+  --line: #29394d;
+  --blue: #38aaff;
+  --bg: #0b111b;
+
+  --surface: #121c2a;
+  --surface-2: #172436;
+  --surface-3: #1d2d42;
+  --accent-soft: rgba(56, 170, 255, .12);
+  --shadow: 0 12px 35px rgba(0, 0, 0, .22);
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% -20%, rgba(35, 104, 160, .13), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  transition: background .3s ease, color .3s ease;
+}
+
+::selection {
+  background: rgba(56, 170, 255, .3);
+  color: #fff;
+}
+
+/* Шапка сайта */
+
+.top {
+  background: rgba(11, 17, 27, .92);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.brand {
+  color: #f2f7ff;
+  transition: color .2s ease;
+}
+
+.brand:hover {
+  color: var(--blue);
+}
+
+.brand span {
+  color: var(--blue);
+}
+
+/* Кнопки */
+
+.btn {
+  border-radius: 12px;
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.primary {
+  background: linear-gradient(135deg, #42b5ff, #2089df);
+  color: #071421;
+  box-shadow: 0 5px 18px rgba(56, 170, 255, .2);
+}
+
+.primary:hover {
+  background: linear-gradient(135deg, #66c4ff, #329ce9);
+  box-shadow: 0 8px 24px rgba(56, 170, 255, .3);
+}
+
+.light {
+  background: var(--surface-3);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.light:hover {
+  background: #263b54;
+}
+
+.danger {
+  background: #351d29;
+  color: #ff8798;
+}
+
+/* Главная страница */
+
+.hero {
+  background: linear-gradient(145deg, #172538, #101a28);
+  border: 1px solid #2a4059;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  color: var(--blue);
+}
+
+.hero h1 {
+  color: #f4f8ff;
+}
+
+.hero h1 span {
+  color: var(--blue);
+}
+
+.sub {
+  color: var(--muted);
+}
+
+/* Поля ввода и поиск */
+
+input,
+textarea,
+select,
+.searchbar input,
+.searchbar select {
+  background: #101a28;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color-scheme: dark;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #71849b;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: #142236;
+  box-shadow: 0 0 0 3px rgba(56, 170, 255, .13);
+}
+
+option {
+  background: #172436;
+  color: #edf4fc;
+}
+
+/* Заголовки разделов */
+
+.section-head h2 {
+  color: #edf4fc;
+}
+
+.section-head p {
+  color: var(--muted);
+}
+
+#status {
+  color: var(--muted);
+}
+
+/* Карточки объявлений */
+
+.item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .12);
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+  animation: premiumAppear .4s ease both;
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 170, 255, .55);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, .28);
+}
+
+.photo {
+  background: #1b2a3d;
+  color: #91a3b8;
+}
+
+.photo img {
+  transition: transform .35s ease;
+}
+
+.item:hover .photo img {
+  transform: scale(1.045);
+}
+
+.item-body {
+  background: var(--surface);
+}
+
+.price {
+  color: var(--blue);
+}
+
+.item h3 {
+  color: #edf4fc;
+}
+
+.meta {
+  color: var(--muted);
+}
+
+.empty {
+  background: var(--surface);
+  border: 1px dashed #3a506b;
+  color: var(--muted);
+}
+
+/* Избранное */
+
+.favorite-btn {
+  background: #172436 !important;
+  color: #d8e7f6 !important;
+  border: 1px solid #40536b !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
+  transition: transform .2s ease, background .2s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+  background: #263b54 !important;
+}
+
+/* Иконки в шапке */
+
+.icon-btn {
+  background: var(--surface);
+  color: #c8d7e8;
+  border: 1px solid var(--line);
+}
+
+.icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+/* Меню профиля */
+
+.account-menu {
+  background: #152235;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.account-menu-item {
+  background: transparent;
+  color: var(--ink);
+  border-radius: 10px;
+  transition: background .2s ease, color .2s ease;
+}
+
+.account-menu-item:hover {
+  background: var(--surface-3);
+  color: var(--blue);
+}
+
+/* Модальные окна */
+
+.modal {
+  background: rgba(2, 7, 14, .78);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.modal.open .dialog {
+  animation: modalAppear .25s ease both;
+}
+
+.dialog {
+  background: #152235;
+  color: var(--ink);
+  border: 1px solid #30445e;
+  box-shadow: 0 25px 90px rgba(0, 0, 0, .55);
+}
+
+.dialog h2 {
+  color: #f1f6fd;
+}
+
+.dialog label {
+  color: #cbd9e8;
+}
+
+.x {
+  color: #9aadc2;
+}
+
+.x:hover {
+  color: var(--blue);
+}
+
+.textbtn {
+  color: var(--blue);
+}
+
+.message {
+  color: #ffc36c;
+}
+
+/* Страница объявления */
+
+#listingPage {
+  background: transparent;
+}
+
+.listing-main-info,
+.listing-seller-card,
+.listing-price-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+}
+
+.listing-gallery,
+.listing-gallery-main {
+  background: #0e1826;
+}
+
+.listing-gallery-thumbs {
+  background: var(--surface);
+}
+
+.listing-thumb {
+  background: var(--surface-3);
+  border-color: transparent;
+}
+
+.listing-thumb.active {
+  border-color: var(--blue);
+}
+
+.listing-category-label {
+  background: var(--accent-soft);
+  color: var(--blue);
+}
+
+.listing-details h1 {
+  color: #f1f6fd;
+}
+
+.listing-details .listing-price-card {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+.listing-full-price,
+.listing-details .listing-price-card .listing-full-price {
+  color: var(--blue);
+}
+
+.listing-price-caption {
+  color: var(--muted);
+}
+
+.listing-description {
+  color: #c0cddd;
+}
+
+.listing-description-block {
+  border-color: var(--line);
+}
+
+.listing-description-block h3 {
+  color: #edf4fc;
+}
+
+.listing-seller-card h3,
+.listing-seller-info b {
+  color: #edf4fc;
+}
+
+.listing-seller-info p {
+  color: var(--muted);
+}
+
+.listing-seller-avatar {
+  background: var(--surface-3);
+  border-color: var(--line);
+}
+
+.listing-actions {
+  border-color: var(--line);
+}
+
+/* Профиль */
+
+#userProfilePage {
+  background: transparent;
+}
+
+.profile-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+}
+
+.profile-cover {
+  background-color: #172b43;
+}
+
+.profile-avatar {
+  border-color: var(--surface);
+  background: var(--surface-3);
+}
+
+.profile-heading h2,
+.profile-section h3 {
+  color: #edf4fc;
+}
+
+.profile-heading p {
+  color: var(--muted);
+}
+
+.profile-contact {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+.profile-contact b {
+  color: var(--muted);
+}
+
+.profile-contact a {
+  color: var(--blue);
+}
+
+.profile-listings .item {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+/* Предпросмотр фото и видео */
+
+.media-preview-card {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+.media-preview-card button {
+  background: #243951;
+  color: #fff;
+}
+
+.video-preview-card {
+  color: #eaf4ff;
+}
+
+/* Подвал */
+
+footer,
+.site-footer {
+  color: var(--muted);
+}
+
+.footer-telegram {
+  color: var(--blue);
+}
+
+.footer-telegram:hover {
+  color: #82ceff;
+}
+
+/* Ссылки и выделения */
+
+a {
+  transition: color .2s ease;
+}
+
+a:hover {
+  color: var(--blue);
+}
+
+/* Плавные анимации */
+
+@keyframes premiumAppear {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Плавная прокрутка */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Уважение к настройке уменьшения анимации */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Мобильная версия */
+
+@media (max-width: 650px) {
+  .top {
+    background: rgba(11, 17, 27, .96);
+  }
+
+  .account-menu {
+    background: #152235;
+  }
+
+  .account-menu-item:hover {
+    background: #22364e;
+  }
+
+  .hero {
+    background: linear-gradient(145deg, #172538, #101a28);
+  }
+
+  .item {
+    border-radius: 14px;
+  }
+
+  .dialog {
+    background: #152235;
+  }
+}
