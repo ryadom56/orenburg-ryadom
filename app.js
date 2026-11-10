@@ -1314,6 +1314,12 @@ $('messagesBack').addEventListener('click', () => {
 });
 
 $('listingPageBack').addEventListener('click', () => {
+  const url = new URL(window.location.href);
+
+  url.searchParams.delete('listing');
+
+  window.history.replaceState({}, '', url);
+
   $('listingPage').style.display = 'none';
   document.querySelector('main.wrap').style.display = '';
 });
