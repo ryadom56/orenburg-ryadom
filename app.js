@@ -1254,7 +1254,8 @@ async function startConversation(listing) {
   await openChat(conversationId);
 }
   
-  async function showDetail(id) {
+ 
+async function showDetail(id) {
   const x = listings.find(a => String(a.id) === String(id));
   if (!x) return;
 
@@ -1279,14 +1280,17 @@ async function startConversation(listing) {
         </div>
 
         <div class="listing-details">
-          <p class="meta">${esc(x.category || 'Без категории')} · Оренбург</p>
 
-          <div class="listing-full-price">${rub(x.price)}</div>
+          <div class="listing-category-label">
+            ${esc(x.category || 'Без категории')} · Оренбург
+          </div>
 
           <h1>${esc(x.title)}</h1>
 
-          <h3>Описание</h3>
-          <p class="listing-description">${esc(x.description || 'Описание не указано.')}</p>
+          <div class="listing-description-block">
+            <h3>Описание объявления</h3>
+            <p class="listing-description">${esc(x.description || 'Описание не указано.')}</p>
+          </div>
 
           <div class="listing-actions">
             ${user && user.id !== x.user_id ? `
@@ -1305,28 +1309,43 @@ async function startConversation(listing) {
               </button>
             ` : ''}
           </div>
-        </div>
 
+        </div>
       </div>
 
-      <div class="listing-seller-card">
-        <h3>Продавец</h3>
+      <aside class="listing-sidebar">
 
-        <div class="listing-seller-info">
-          ${seller?.avatar_url
-            ? `<img src="${esc(seller.avatar_url)}" alt="Аватар продавца">`
-            : '<div class="listing-seller-avatar">👤</div>'}
+        <div class="listing-price-card">
+          <span class="listing-price-caption">Цена объявления</span>
+          <div class="listing-full-price">${rub(x.price)}</div>
 
-          <div>
-            <b>${esc(seller?.display_name || 'Пользователь')}</b>
-            <p>${esc(seller?.about || 'Информация о продавце не указана.')}</p>
+          ${user && user.id !== x.user_id ? `
+            <button type="button" id="sidebarWriteSeller" class="btn primary full">
+              ✉ Написать продавцу
+            </button>
+          ` : ''}
+        </div>
+
+        <div class="listing-seller-card">
+          <h3>Продавец</h3>
+
+          <div class="listing-seller-info">
+            ${seller?.avatar_url
+              ? `<img src="${esc(seller.avatar_url)}" alt="Аватар продавца">`
+              : '<div class="listing-seller-avatar">👤</div>'}
+
+            <div>
+              <b>${esc(seller?.display_name || 'Пользователь')}</b>
+              <p>${esc(seller?.about || 'Информация о продавце не указана.')}</p>
+            </div>
           </div>
+
+          <button type="button" id="sellerProfileOpen" class="btn light full">
+            Профиль продавца
+          </button>
         </div>
 
-        <button type="button" id="sellerProfileOpen" class="btn light">
-          Профиль продавца
-        </button>
-      </div>
+      </aside>
 
     </div>
   `;
@@ -1342,9 +1361,16 @@ async function startConversation(listing) {
   });
 
   const writeButton = $('writeSeller');
+  const sidebarWriteButton = $('sidebarWriteSeller');
 
   if (writeButton) {
     writeButton.addEventListener('click', () => {
+      startConversation(x);
+    });
+  }
+
+  if (sidebarWriteButton) {
+    sidebarWriteButton.addEventListener('click', () => {
       startConversation(x);
     });
   }
@@ -1376,6 +1402,7 @@ async function startConversation(listing) {
     });
   }
 }
+
 
   $('searchBtn').addEventListener('click',render);
   $('search').addEventListener('keydown',e => { if(e.key === 'Enter') render(); });
