@@ -908,6 +908,113 @@ $('favoritesOpen').addEventListener('click', async () => {
     open('listingModal');
   });
 
+
+// Предпросмотр фотографий и видео объявления
+
+const listingPhotoInput = $('photo');
+const listingVideoInput = $('video');
+const listingPhotoPreview = $('photoPreview');
+const listingVideoPreview = $('videoPreview');
+
+let listingPhotoUrls = [];
+let listingVideoUrl = null;
+
+function renderListingPhotoPreview() {
+  listingPhotoUrls.forEach(url => URL.revokeObjectURL(url));
+  listingPhotoUrls = [];
+
+  listingPhotoPreview.innerHTML = '';
+
+  const files = Array.from(listingPhotoInput.files);
+
+  files.forEach((file, index) => {
+    const url = URL.createObjectURL(file);
+    listingPhotoUrls.push(url);
+
+    const card = document.createElement('div');
+    card.className = 'media-preview-card';
+
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Фото объявления';
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.title = 'Удалить фотографию';
+
+    remove.addEventListener('click', () => {
+      const transfer = new DataTransfer();
+
+      Array.from(listingPhotoInput.files).forEach((item, i) => {
+        if (i !== index) transfer.items.add(item);
+      });
+
+      listingPhotoInput.files = transfer.files;
+      renderListingPhotoPreview();
+    });
+
+    card.append(img, remove);
+    listingPhotoPreview.append(card);
+  });
+}
+
+function renderListingVideoPreview() {
+  if (listingVideoUrl) {
+    URL.revokeObjectURL(listingVideoUrl);
+    listingVideoUrl = null;
+  }
+
+  listingVideoPreview.innerHTML = '';
+
+  const file = listingVideoInput.files[0];
+  if (!file) return;
+
+  listingVideoUrl = URL.createObjectURL(file);
+
+  const card = document.createElement('div');
+  card.className = 'media-preview-card video-preview-card';
+
+  const video = document.createElement('video');
+  video.src = listingVideoUrl;
+  video.controls = true;
+  video.preload = 'metadata';
+
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.textContent = '×';
+  remove.title = 'Удалить видео';
+
+  remove.addEventListener('click', () => {
+    listingVideoInput.value = '';
+    renderListingVideoPreview();
+  });
+
+  card.append(video, remove);
+  listingVideoPreview.append(card);
+}
+
+listingPhotoInput.addEventListener('change', () => {
+  if (listingPhotoInput.files.length > 10) {
+    alert('Можно выбрать не больше 10 фотографий.');
+    listingPhotoInput.value = '';
+  }
+
+  renderListingPhotoPreview();
+});
+
+listingVideoInput.addEventListener('change', () => {
+  const file = listingVideoInput.files[0];
+
+  if (file && file.size > 50 * 1024 * 1024) {
+    alert('Видео должно быть не больше 50 МБ.');
+    listingVideoInput.value = '';
+  }
+
+  renderListingVideoPreview();
+});
+
+  
   $('listingForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     if (!user) return;
