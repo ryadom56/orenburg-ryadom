@@ -120,13 +120,49 @@ function render() {
 }
 
 
-  async function load() {
-    if (!db) { configStatus(); render(); return; }
-    const {data,error} = await db.from('listings').select('*').order('created_at', {ascending:false});
-    if (error) { $('status').textContent = 'Не удалось загрузить объявления: ' + error.message; return; }
-    listings = data || [];
+ 
+async function load() {
+  if (!db) {
+    configStatus();
     render();
+    return;
   }
+
+  const { data, error } = await db
+    .from('listings')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    $('status').textContent =
+      'Не удалось загрузить объявления: ' + error.message;
+    return;
+  }
+
+  listings = data || [];
+  render();
+
+  // Проверяем, есть ли в ссылке ID объявления
+
+  const listingId = new URLSearchParams(window.location.search)
+    .get('listing');
+
+  if (listingId) {
+    const target = listings.find(item =>
+      String(item.id) === String(listingId) &&
+      item.status === 'approved'
+    );
+
+    if (target) {
+      await syncUser();
+      await showDetail(target.id);
+    } else {
+      $('status').textContent =
+        'Объявление не найдено или больше недоступно.';
+    }
+  }
+}
+
 
 
 async function updateUnreadMessagesBadge() {
