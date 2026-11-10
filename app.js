@@ -567,22 +567,64 @@ document.querySelector('main.wrap').style.display = '';
     const mine = data || [];
     $('myCount').textContent = `Всего: ${mine.length}`;
 
-    list.innerHTML = mine.length ? mine.map(x => `
-      <div class="item" style="margin:12px 0;padding:12px">
-        <div style="display:flex;gap:12px;align-items:center">
-          ${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="" style="width:90px;height:75px;object-fit:cover;border-radius:8px">` : ''}
-          <div style="min-width:0">
-            <b>${esc(x.title)}</b>
-            <p class="price">${rub(x.price)}</p>
-            <p class="meta">${esc(x.category)}</p>
-          </div>
+   
+list.innerHTML = mine.length ? mine.map(x => {
+  const statusInfo = {
+    pending: {
+      title: '⏳ На проверке',
+      color: '#b7791f',
+      background: '#fff7e6'
+    },
+    revision_requested: {
+      title: '📝 На доработке',
+      color: '#b45309',
+      background: '#fff7ed'
+    },
+    approved: {
+      title: '✅ Активно',
+      color: '#15803d',
+      background: '#f0fdf4'
+    },
+    rejected: {
+      title: '❌ Отклонено',
+      color: '#dc2626',
+      background: '#fef2f2'
+    }
+  };
+
+  const currentStatus = statusInfo[x.status] || statusInfo.pending;
+
+  return `
+    <div class="item" style="margin:12px 0;padding:12px">
+      <div style="display:flex;gap:12px;align-items:center">
+        ${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="" style="width:90px;height:75px;object-fit:cover;border-radius:8px">` : ''}
+        <div style="min-width:0">
+          <b>${esc(x.title)}</b>
+          <p class="price">${rub(x.price)}</p>
+          <p class="meta">${esc(x.category)}</p>
         </div>
-       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-<button class="btn light" data-view="${esc(x.id)}">Посмотреть</button>
-<button class="btn light" data-edit="${esc(x.id)}">Редактировать</button>
-<button class="btn danger" data-delete="${esc(x.id)}">Удалить</button>
-</div>
-      </div>`).join('') : '<p>У тебя пока нет объявлений.</p>';
+      </div>
+
+      <div style="margin-top:12px;padding:10px;border-radius:8px;background:${currentStatus.background};color:${currentStatus.color}">
+        <b>Статус: ${currentStatus.title}</b>
+      </div>
+
+      ${x.moderation_note ? `
+        <div style="margin-top:10px;padding:12px;background:#fff7ed;border-radius:8px">
+          <b>Комментарий модератора:</b>
+          <p style="margin:6px 0 0">${esc(x.moderation_note)}</p>
+        </div>
+      ` : ''}
+
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn light" data-view="${esc(x.id)}">Посмотреть</button>
+        <button class="btn light" data-edit="${esc(x.id)}">Редактировать</button>
+        <button class="btn danger" data-delete="${esc(x.id)}">Удалить</button>
+      </div>
+    </div>
+  `;
+}).join('') : '<p>У тебя пока нет объявлений.</p>';
+
 
     list.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => {
   const id = btn.dataset.view;
