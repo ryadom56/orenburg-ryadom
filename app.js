@@ -160,6 +160,68 @@ async function updateUnreadMessagesBadge() {
   }
 }
 
+  
+let messagesRealtimeChannel = null;
+let messagesRealtimeUserId = null;
+
+function setupMessagesRealtime() {
+  if (!db || !user) {
+    if (messagesRealtimeChannel) {
+      db?.removeChannel(messagesRealtimeChannel);
+      messagesRealtimeChannel = null;
+      messagesRealtimeUserId = null;
+    }
+    return;
+  }
+
+  if (
+    messagesRealtimeChannel &&
+    messagesRealtimeUserId === user.id
+  ) {
+    return;
+  }
+
+  if (messagesRealtimeChannel) {
+    db.removeChannel(messagesRealtimeChannel);
+    messagesRealtimeChannel = null;
+  }
+
+  messagesRealtimeUserId = user.id;
+
+  messagesRealtimeChannel = db
+    .channel('messages-live-' + user.id)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages'
+      },
+      async (payload) => {
+        const newMessage = payload.new;
+
+        if (!newMessage || newMessage.sender_id === user?.id) {
+          return;
+        }
+
+        await updateUnreadMessagesBadge();
+
+        if ($('messagesPage')?.style.display === 'block') {
+          if ($('chatWindow')?.style.display === 'block') {
+            if (window.refreshActiveChat) {
+              await window.refreshActiveChat();
+            }
+          } else {
+            await loadConversations();
+          }
+        }
+      }
+    )
+    .subscribe((status) => {
+      console.log('Статус уведомлений:', status);
+    });
+}
+
 async function syncUser() {
   const accountButton = $('loginOpen');
   const moderationButton = $('moderationOpen');
