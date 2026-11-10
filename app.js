@@ -1685,9 +1685,12 @@ async function openSellerProfile(userId) {
   });
 }
 
+
 async function loadConversations() {
   const list = $('conversationsList');
   list.innerHTML = '<p>Загружаем диалоги...</p>';
+
+  if (!user) return;
 
   const { data, error } = await db
     .from('conversations')
@@ -1722,18 +1725,71 @@ async function loadConversations() {
       .eq('id', conversation.listing_id)
       .maybeSingle();
 
-    return `
-      <button type="button"
-        class="item"
-        data-chat-id="${esc(conversation.id)}"
-        style="width:100%;text-align:left;margin:10px 0;padding:15px;border:1px solid #e7e9ee;cursor:pointer">
-        <b>${esc(profile?.display_name || 'Пользователь')}</b>
-        <p class="meta">Объявление: ${esc(listing?.title || 'Объявление удалено')}</p>
-      </button>
-    `;
+    const { data: messages } = await db
+      .from('messages')
+      .select('body, created_at')
+      .eq('conversation_id', conversation.id)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    const lastMessage = messages?.[0];
+
+    const lastMessageText = lastMessage
+      ? lastMessage.body
+      : 'Пока нет сообщений';
+
+    const lastMessageTime = lastMessage
+      ? new Date(lastMessage.created_at).toLocaleString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      : '';
+
+    return {
+      id: conversation.id,
+      name: profile?.display_name || 'Пользователь',
+      avatar: profile?.avatar_url,
+      listing: listing?.title || 'Объявление удалено',
+      lastMessage: lastMessageText,
+      time: lastMessageTime,
+      date: lastMessage
+        ? new Date(lastMessage.created_at).getTime()
+        : new Date(conversation.created_at).getTime()
+    };
   }));
 
-  list.innerHTML = cards.join('');
+  cards.sort((a, b) => b.date - a.date);
+
+  list.innerHTML = cards.map(chat => `
+    <button type="button"
+      class="item"
+      data-chat-id="${esc(chat.id)}"
+      style="width:100%;text-align:left;margin:10px 0;padding:15px;border:1px solid #e7e9ee;border-radius:12px;cursor:pointer;background:white">
+
+      <div style="display:flex;align-items:center;gap:12px">
+        ${
+          chat.avatar
+            ? `<img src="${esc(chat.avatar)}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`
+            : `<div style="width:44px;height:44px;border-radius:50%;background:#eef0f4;display:flex;align-items:center;justify-content:center">👤</div>`
+        }
+
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;gap:10px">
+            <b>${esc(chat.name)}</b>
+            <small class="meta">${esc(chat.time)}</small>
+          </div>
+
+          <p class="meta" style="margin:5px 0">
+            ${esc(chat.lastMessage.slice(0, 75))}
+          </p>
+
+          <small class="meta">Объявление: ${esc(chat.listing)}</small>
+        </div>
+      </div>
+    </button>
+  `).join('');
 
   list.querySelectorAll('[data-chat-id]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1741,6 +1797,7 @@ async function loadConversations() {
     });
   });
 }
+
 
 async function openChat(conversationId) {
   const chat = $('chatWindow');
