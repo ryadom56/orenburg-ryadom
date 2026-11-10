@@ -230,7 +230,8 @@ if (profileError) {
 console.error('Ошибка загрузки профиля:', profileError);
 }
     
-    profile.innerHTML = `
+   
+profile.innerHTML = `
   <div class="profile-card">
     <button type="button" class="x" data-profile-close>×</button>
 
@@ -240,45 +241,54 @@ console.error('Ошибка загрузки профиля:', profileError);
           style="width:110px;height:110px;border-radius:50%;object-fit:cover">`
         : `<div style="width:110px;height:110px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:42px">👤</div>`}
 
-${profileData?.avatar_url
-  ? `<button type="button" id="deleteAvatar" class="btn danger" style="margin:10px">
-       Удалить аватар
-     </button>`
-  : ''}
+      ${profileData?.avatar_url
+        ? `<button type="button" id="deleteAvatar" class="btn danger" style="margin:10px">
+             Удалить аватар
+           </button>`
+        : ''}
 
       <h2>${esc(profileData?.display_name || 'Пользователь')}</h2>
       <p>${esc(profileData?.about || 'Расскажи немного о себе')}</p>
     </div>
 
     <div style="padding:15px;background:#f7f8fa;border-radius:12px">
-     <h3>Контакты</h3>
+      <h3>Контакты</h3>
 
-<p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
+      <p><b>Email:</b> ${esc(user.email || 'Не указан')}</p>
 
-<p><b>Телефон:</b>
-  ${profileData?.phone
-    ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
-    : 'Не указан'}
-</p>
+      <p><b>Телефон:</b>
+        ${profileData?.phone
+          ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
+          : 'Не указан'}
+      </p>
 
-<p><b>Telegram:</b>
-  ${profileData?.telegram
-    ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
-    : 'Не указан'}
-</p>
+      <p><b>Telegram:</b>
+        ${profileData?.telegram
+          ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
+          : 'Не указан'}
+      </p>
 
-<p><b>WhatsApp:</b>
-  ${profileData?.whatsapp
-    ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
-    : 'Не указан'}
-</p>
+      <p><b>WhatsApp:</b>
+        ${profileData?.whatsapp
+          ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
+          : 'Не указан'}
+      </p>
 
-<p><b>VK:</b>
-  ${profileData?.vk
-    ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
-    : 'Не указан'}
-</p>
-</div>
+      <p><b>VK:</b>
+        ${profileData?.vk
+          ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
+          : 'Не указан'}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      id="moderationOpen"
+      class="btn primary full"
+      style="display:none;margin-top:15px"
+    >
+      🛡 Модерация объявлений
+    </button>
 
     <button type="button" id="editProfileOpen" class="btn full" style="margin:15px 0">
       Редактировать профиль
@@ -295,6 +305,7 @@ ${profileData?.avatar_url
       Выйти из аккаунта
     </button>
   </div>`;
+
 
    $('messagesPage').style.display = 'none';
 $('listingPage').style.display = 'none';
