@@ -68,6 +68,7 @@ async function toggleFavorite(id) {
  
 
 
+
 function render() {
   const q = $('search').value.trim().toLowerCase();
   const cat = $('category').value;
@@ -85,28 +86,37 @@ function render() {
     Number(x.price) <= maxPrice
   );
 
-  if (sort === 'cheap') rows.sort((a, b) => a.price - b.price);
-  else if (sort === 'expensive') rows.sort((a, b) => b.price - a.price);
-  else rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (sort === 'cheap') {
+    rows.sort((a, b) => a.price - b.price);
+  } else if (sort === 'expensive') {
+    rows.sort((a, b) => b.price - a.price);
+  } else {
+    rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
 
   $('grid').innerHTML = rows.length ? rows.map(x => `
     <article class="item" data-id="${esc(x.id)}">
 
       <div class="item-media">
         ${x.photo_url
-          ? `<img src="${esc(x.photo_url)}" alt="${esc(x.title)}" loading="lazy">`
+          ? `<img
+              src="${esc(x.photo_url)}"
+              alt="${esc(x.title)}"
+              loading="lazy"
+            >`
           : `<div class="photo-placeholder">
               <span>Нет фотографии</span>
             </div>`
         }
 
-        <span class="item-category">${esc(x.category)}</span>
+        <span class="item-category">${esc(x.category || 'Объявление')}</span>
 
         <button
           type="button"
           class="favorite-btn"
           data-id="${esc(x.id)}"
           aria-label="${favorites.has(String(x.id)) ? 'Убрать из избранного' : 'Добавить в избранное'}"
+          title="${favorites.has(String(x.id)) ? 'Убрать из избранного' : 'В избранное'}"
         >${favorites.has(String(x.id)) ? '♥' : '♡'}</button>
       </div>
 
@@ -116,11 +126,20 @@ function render() {
           <div class="price">${rub(x.price)}</div>
         </div>
 
-        <h3>${esc(x.title)}</h3>
+        <h3 class="item-title">${esc(x.title)}</h3>
 
-        <div class="item-location">
-          <span>⌖</span>
-          <span>Оренбург</span>
+        ${x.description
+          ? `<p class="item-description">${esc(x.description)}</p>`
+          : ''
+        }
+
+        <div class="item-footer">
+          <div class="item-location">
+            <span>⌖</span>
+            <span>Оренбург</span>
+          </div>
+
+          <span class="item-open-hint">Подробнее →</span>
         </div>
 
       </div>
@@ -150,7 +169,6 @@ function render() {
 }
 
 
- 
 async function load() {
   if (!db) {
     configStatus();
