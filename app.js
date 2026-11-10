@@ -413,25 +413,56 @@ editButton.addEventListener('click', () => {
     document.body.appendChild(editModal);
   }
 
-  editModal.innerHTML = `
+ 
+editModal.innerHTML = `
     <form class="dialog" id="editProfileForm" style="max-width:500px">
       <button type="button" class="x" id="closeEditProfile">×</button>
       <h2>Редактирование профиля</h2>
 
       <label>Аватар профиля
-  <input
-    id="profileAvatar"
-    type="file"
-    accept="image/jpeg,image/png,image/webp"
-  >
-</label>
+        <input
+          id="profileAvatar"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </label>
 
-<div id="avatarPreview" style="margin:10px 0">
-  ${profileData?.avatar_url
-    ? `<img src="${esc(profileData.avatar_url)}"
-        style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
-    : ''}
-</div>
+      <div id="avatarPreview" style="margin:10px 0">
+        ${profileData?.avatar_url
+          ? `<img src="${esc(profileData.avatar_url)}"
+              style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
+          : ''}
+      </div>
+
+      <label>Обложка профиля
+        <input
+          id="profileCover"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </label>
+
+      <div id="coverPreview" style="margin:10px 0">
+        ${profileData?.cover_url
+          ? `<img src="${esc(profileData.cover_url)}"
+              style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
+          : ''}
+      </div>
+
+      <label>Фон профиля
+        <input
+          id="profileBackground"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </label>
+
+      <div id="backgroundPreview" style="margin:10px 0">
+        ${profileData?.background_url
+          ? `<img src="${esc(profileData.background_url)}"
+              style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
+          : ''}
+      </div>
 
       <label>Имя или псевдоним
         <input id="profileName" maxlength="50"
@@ -471,6 +502,7 @@ editButton.addEventListener('click', () => {
       <button type="submit" class="btn full">Сохранить изменения</button>
       <p id="profileEditMessage" class="message"></p>
     </form>`;
+
 
   open('editProfileModal');
 
