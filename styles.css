@@ -2605,3 +2605,438 @@ html {
     transition: none;
   }
 }
+
+
+/* ==========================================
+   ORENBURG RYADOM — PREMIUM MARKETPLACE
+   НОВАЯ КОМПОЗИЦИЯ ГЛАВНОЙ СТРАНИЦЫ
+========================================== */
+
+body {
+  background:
+    radial-gradient(ellipse at 50% -15%, rgba(38, 113, 190, .16), transparent 42%),
+    #0b111b;
+  color: #edf4fc;
+}
+
+.wrap {
+  max-width: 1320px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* ШАПКА */
+
+.top {
+  height: 76px;
+  padding: 0 max(32px, calc((100% - 1320px) / 2));
+  background: rgba(11, 17, 27, .88);
+  border-bottom: 1px solid rgba(132, 166, 205, .12);
+  backdrop-filter: blur(20px);
+}
+
+.brand {
+  font-size: 25px;
+  letter-spacing: -1.2px;
+  font-weight: 850;
+}
+
+.top-actions {
+  align-items: center;
+  gap: 14px;
+}
+
+.btn {
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 14px;
+  transition: .22s ease;
+}
+
+.primary {
+  background: linear-gradient(135deg, #38aaff, #2478ed);
+  color: white;
+  box-shadow: 0 5px 18px rgba(38, 137, 255, .2);
+}
+
+.primary:hover {
+  background: linear-gradient(135deg, #55b8ff, #398dff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(38, 137, 255, .3);
+}
+
+.light {
+  background: #1a293c;
+  color: #dceaff;
+}
+
+/* ГЛАВНЫЙ ЭКРАН */
+
+.hero {
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  margin: 38px 0 54px;
+  padding: 62px 66px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(115, 170, 230, .16);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 85% 15%, rgba(43, 140, 255, .23), transparent 36%),
+    radial-gradient(ellipse at 95% 100%, rgba(27, 83, 150, .22), transparent 40%),
+    linear-gradient(120deg, #15253a 0%, #101c2d 55%, #111e30 100%);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, .22);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 370px;
+  height: 370px;
+  right: 7%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(99, 175, 255, .13);
+  box-shadow:
+    0 0 0 45px rgba(99, 175, 255, .025),
+    0 0 0 90px rgba(99, 175, 255, .02);
+  pointer-events: none;
+}
+
+.hero-content {
+  width: min(100%, 760px);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #79bcff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+  margin-bottom: 22px;
+}
+
+.hero-label-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38aaff;
+  box-shadow: 0 0 13px #38aaff;
+}
+
+.hero h1 {
+  color: #f4f8ff;
+  font-size: clamp(42px, 5.5vw, 67px);
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -3.5px;
+  margin: 0 0 18px;
+}
+
+.hero h1 span {
+  color: #49aaff;
+}
+
+.hero-description {
+  max-width: 540px;
+  color: #a8bad0;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+/* ПОИСК */
+
+.searchbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 145px;
+  gap: 9px;
+  max-width: 700px;
+  padding: 7px;
+  border: 1px solid rgba(151, 190, 235, .17);
+  border-radius: 16px;
+  background: rgba(7, 14, 24, .62);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding-left: 13px;
+}
+
+.search-icon {
+  color: #64b7ff;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.searchbar input {
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #edf4fc;
+  padding: 13px 5px;
+  box-shadow: none;
+}
+
+.searchbar input::placeholder {
+  color: #71849c;
+}
+
+.searchbar .btn {
+  border-radius: 11px;
+}
+
+/* ПОПУЛЯРНЫЕ КАТЕГОРИИ */
+
+.hero-categories {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.hero-categories > span {
+  color: #8297b0;
+  font-size: 12px;
+  margin-right: 3px;
+}
+
+.hero-categories button {
+  border: 1px solid rgba(150, 190, 235, .16);
+  border-radius: 30px;
+  padding: 8px 13px;
+  background: rgba(255, 255, 255, .045);
+  color: #d7e7fa;
+  font-size: 12px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.hero-categories button:hover {
+  border-color: #38aaff;
+  background: rgba(56, 170, 255, .13);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* КАТАЛОГ И ФИЛЬТРЫ */
+
+.catalog-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.catalog-overline {
+  color: #45aaff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  margin-bottom: 7px;
+}
+
+.catalog-heading h2 {
+  margin: 0;
+  color: #f0f5fc;
+  font-size: 28px;
+  letter-spacing: -.8px;
+}
+
+.catalog-heading p {
+  color: #8294aa;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+.catalog-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.catalog-filters select,
+.catalog-filters input {
+  width: auto;
+  min-width: 125px;
+  max-width: 175px;
+  padding: 10px 12px;
+  border: 1px solid #29394d;
+  border-radius: 11px;
+  background: #121e2d;
+  color: #dce8f6;
+  font-size: 12px;
+}
+
+.catalog-filters .btn {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+/* СЕТКА ОБЪЯВЛЕНИЙ */
+
+.grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.item {
+  background: #121c2a;
+  border: 1px solid rgba(132, 166, 205, .13);
+  border-radius: 17px;
+  box-shadow: 0 7px 22px rgba(0, 0, 0, .12);
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 170, 255, .55);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, .25);
+}
+
+/* АНИМАЦИИ */
+
+@keyframes heroAppear {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-content {
+  animation: heroAppear .65s ease both;
+}
+
+.catalog-toolbar {
+  animation: heroAppear .75s ease both;
+}
+
+/* ПЛАНШЕТЫ */
+
+@media (max-width: 1050px) {
+  .catalog-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-filters {
+    width: 100%;
+  }
+
+  .catalog-filters select,
+  .catalog-filters input {
+    flex: 1 1 140px;
+    max-width: none;
+  }
+
+  .hero {
+    padding: 48px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ТЕЛЕФОНЫ */
+
+@media (max-width: 650px) {
+  .wrap {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .top {
+    height: 66px;
+    padding: 0 14px;
+  }
+
+  .hero {
+    min-height: auto;
+    margin: 20px 0 35px;
+    padding: 34px 22px;
+    border-radius: 21px;
+  }
+
+  .hero::before {
+    width: 230px;
+    height: 230px;
+    right: -100px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    letter-spacing: -2px;
+  }
+
+  .hero-description {
+    font-size: 13px;
+  }
+
+  .searchbar {
+    grid-template-columns: 1fr;
+    padding: 7px;
+  }
+
+  .searchbar .btn {
+    width: 100%;
+  }
+
+  .hero-categories {
+    gap: 7px;
+  }
+
+  .hero-categories > span {
+    width: 100%;
+  }
+
+  .hero-categories button {
+    padding: 8px 11px;
+  }
+
+  .catalog-heading h2 {
+    font-size: 23px;
+  }
+
+  .catalog-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .catalog-filters select,
+  .catalog-filters input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-content,
+  .catalog-toolbar {
+    animation: none;
+  }
+}
