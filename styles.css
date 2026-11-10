@@ -1795,3 +1795,33 @@ footer {
     margin-top: 5px;
   }
 }
+
+
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  color: #64748b;
+}
+
+.footer-telegram {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-telegram:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.footer-telegram svg {
+  flex-shrink: 0;
+}
