@@ -128,6 +128,38 @@ function render() {
     render();
   }
 
+
+async function updateUnreadMessagesBadge() {
+  const badge = $('unreadMessagesBadge');
+
+  if (!badge) return;
+
+  if (!user) {
+    badge.style.display = 'none';
+    badge.textContent = '';
+    return;
+  }
+
+  const { count, error } = await db
+    .from('messages')
+    .select('id', { count: 'exact', head: true })
+    .neq('sender_id', user.id)
+    .is('read_at', null);
+
+  if (error) {
+    console.error('Ошибка подсчёта непрочитанных сообщений:', error);
+    return;
+  }
+
+  if (count > 0) {
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+    badge.textContent = '';
+  }
+}
+
 async function syncUser() {
   const accountButton = $('loginOpen');
   const moderationButton = $('moderationOpen');
@@ -140,6 +172,8 @@ async function syncUser() {
     accountButton.innerHTML = 'Войти';
     accountButton.title = 'Войти';
     favorites.clear();
+    user = null;
+    await updateUnreadMessagesBadge();
     return;
   }
 
@@ -198,9 +232,18 @@ async function syncUser() {
       moderationButton.style.display = '';
     }
 
+    await updateUnreadMessagesBadge();
+
+    if (!window.unreadMessagesTimer) {
+      window.unreadMessagesTimer = setInterval(() => {
+        updateUnreadMessagesBadge();
+      }, 15000);
+    }
+
   } else {
     accountButton.innerHTML = 'Войти';
     accountButton.title = 'Войти';
+    await updateUnreadMessagesBadge();
   }
 
   render();
