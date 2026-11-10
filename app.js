@@ -1101,16 +1101,28 @@ async function loadModeration() {
   // Открытие страницы модерации
 
 $('moderationOpen')?.addEventListener('click', async () => {
-  if (!user) return;
+  await syncUser();
+
+  if (!user) {
+    alert('Войди в аккаунт администратора.');
+    open('authModal');
+    return;
+  }
 
   const { data: isAdmin, error } = await db.rpc('is_listing_admin');
 
-  if (error || isAdmin !== true) {
+  if (error) {
+    console.error('Ошибка проверки администратора:', error);
+    alert('Не удалось проверить права администратора.');
+    return;
+  }
+
+  if (isAdmin !== true) {
     alert('У тебя нет доступа к модерации.');
     return;
   }
 
-  $('accountMenu').style.display = 'none';
+  $('accountMenu')?.classList.remove('open');
   document.querySelector('main.wrap').style.display = 'none';
   $('userProfilePage').style.display = 'none';
   $('messagesPage').style.display = 'none';
