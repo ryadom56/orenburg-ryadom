@@ -1729,6 +1729,7 @@ async function openSellerProfile(userId) {
 }
 
 
+
 async function loadConversations() {
   const list = $('conversationsList');
   list.innerHTML = '<p>Загружаем диалоги...</p>';
@@ -1770,15 +1771,26 @@ async function loadConversations() {
 
     const { data: messages } = await db
       .from('messages')
-      .select('body, created_at')
+      .select('body, sender_id, created_at')
       .eq('conversation_id', conversation.id)
       .order('created_at', { ascending: false })
       .limit(1);
 
+    const { count: unreadCount, error: unreadError } = await db
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('conversation_id', conversation.id)
+      .neq('sender_id', user.id)
+      .is('read_at', null);
+
+    if (unreadError) {
+      console.error('Ошибка подсчёта непрочитанных:', unreadError);
+    }
+
     const lastMessage = messages?.[0];
 
     const lastMessageText = lastMessage
-      ? lastMessage.body
+      ? `${lastMessage.sender_id === user.id ? 'Вы: ' : (profile?.display_name || 'Пользователь') + ': '}${lastMessage.body}`
       : 'Пока нет сообщений';
 
     const lastMessageTime = lastMessage
@@ -1796,6 +1808,7 @@ async function loadConversations() {
       avatar: profile?.avatar_url,
       listing: listing?.title || 'Объявление удалено',
       lastMessage: lastMessageText,
+      unread: unreadCount || 0,
       time: lastMessageTime,
       date: lastMessage
         ? new Date(lastMessage.created_at).getTime()
@@ -1819,14 +1832,22 @@ async function loadConversations() {
         }
 
         <div style="flex:1;min-width:0">
-          <div style="display:flex;justify-content:space-between;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
             <b>${esc(chat.name)}</b>
             <small class="meta">${esc(chat.time)}</small>
           </div>
 
-          <p class="meta" style="margin:5px 0">
-            ${esc(chat.lastMessage.slice(0, 75))}
-          </p>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <p class="meta" style="margin:5px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              ${esc(chat.lastMessage.slice(0, 75))}
+            </p>
+
+            ${
+              chat.unread > 0
+                ? `<span style="flex-shrink:0;background:#ef4444;color:white;border-radius:50px;min-width:20px;height:20px;padding:0 6px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">${chat.unread > 99 ? '99+' : chat.unread}</span>`
+                : ''
+            }
+          </div>
 
           <small class="meta">Объявление: ${esc(chat.listing)}</small>
         </div>
@@ -1840,7 +1861,6 @@ async function loadConversations() {
     });
   });
 }
-
 
 
 async function openChat(conversationId) {
