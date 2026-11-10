@@ -2481,12 +2481,31 @@ async function showDetail(id) {
 
 
 
-  $('searchBtn').addEventListener('click',render);
-  $('search').addEventListener('keydown',e => { if(e.key === 'Enter') render(); });
-  $('category').addEventListener('change',render);
-  $('sort')?.addEventListener('change',render);
+
+  $('searchBtn').addEventListener('click', render);
+
+  $('search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') render();
+  });
+
+  $('category').addEventListener('change', render);
+  $('sort')?.addEventListener('change', render);
+
+  $('minPrice').addEventListener('input', render);
+  $('maxPrice').addEventListener('input', render);
+
+  $('resetFilters').addEventListener('click', () => {
+    $('search').value = '';
+    $('category').value = '';
+    $('minPrice').value = '';
+    $('maxPrice').value = '';
+    $('sort').value = 'new';
+
+    render();
+  });
 
   if (db) db.auth.onAuthStateChange(() => syncUser());
   syncUser();
   load();
 })();
+
