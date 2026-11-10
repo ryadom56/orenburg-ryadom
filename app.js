@@ -403,6 +403,7 @@ document.querySelector('main.wrap').style.display = '';
     
     const editButton = document.getElementById('editProfileOpen');
 
+
 editButton.addEventListener('click', () => {
   let editModal = document.getElementById('editProfileModal');
 
@@ -413,54 +414,38 @@ editButton.addEventListener('click', () => {
     document.body.appendChild(editModal);
   }
 
- 
-editModal.innerHTML = `
+  editModal.innerHTML = `
     <form class="dialog" id="editProfileForm" style="max-width:500px">
       <button type="button" class="x" id="closeEditProfile">×</button>
       <h2>Редактирование профиля</h2>
 
       <label>Аватар профиля
-        <input
-          id="profileAvatar"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-        >
+        <input id="profileAvatar" type="file" accept="image/jpeg,image/png,image/webp">
       </label>
 
       <div id="avatarPreview" style="margin:10px 0">
         ${profileData?.avatar_url
-          ? `<img src="${esc(profileData.avatar_url)}"
-              style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
+          ? `<img src="${esc(profileData.avatar_url)}" style="width:100px;height:100px;border-radius:50%;object-fit:cover">`
           : ''}
       </div>
 
       <label>Обложка профиля
-        <input
-          id="profileCover"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-        >
+        <input id="profileCover" type="file" accept="image/jpeg,image/png,image/webp">
       </label>
 
       <div id="coverPreview" style="margin:10px 0">
         ${profileData?.cover_url
-          ? `<img src="${esc(profileData.cover_url)}"
-              style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
+          ? `<img src="${esc(profileData.cover_url)}" style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
           : ''}
       </div>
 
       <label>Фон профиля
-        <input
-          id="profileBackground"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-        >
+        <input id="profileBackground" type="file" accept="image/jpeg,image/png,image/webp">
       </label>
 
       <div id="backgroundPreview" style="margin:10px 0">
         ${profileData?.background_url
-          ? `<img src="${esc(profileData.background_url)}"
-              style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
+          ? `<img src="${esc(profileData.background_url)}" style="width:100%;height:130px;object-fit:cover;border-radius:12px">`
           : ''}
       </div>
 
@@ -501,191 +486,180 @@ editModal.innerHTML = `
 
       <button type="submit" class="btn full">Сохранить изменения</button>
       <p id="profileEditMessage" class="message"></p>
-    </form>`;
-
+    </form>
+  `;
 
   open('editProfileModal');
 
-  const avatarInput = document.getElementById('profileAvatar');
-const avatarPreview = document.getElementById('avatarPreview');
-
-
-function setupProfileImagePreview(inputId, previewId, isAvatar = false) {
-  const input = document.getElementById(inputId);
-  const preview = document.getElementById(previewId);
-
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      alert('Выбери изображение.');
-      input.value = '';
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Изображение должно быть меньше 5 МБ.');
-      input.value = '';
-      return;
-    }
-
-    const imageUrl = URL.createObjectURL(file);
-
-    preview.innerHTML = `
-      <img src="${imageUrl}"
-        style="
-          width:${isAvatar ? '100px' : '100%'};
-          height:${isAvatar ? '100px' : '130px'};
-          border-radius:${isAvatar ? '50%' : '12px'};
-          object-fit:cover;
-        ">
-    `;
-  });
-}
-
-setupProfileImagePreview('profileAvatar', 'avatarPreview', true);
-setupProfileImagePreview('profileCover', 'coverPreview');
-setupProfileImagePreview('profileBackground', 'backgroundPreview');
-
-
-const avatarFile = document.getElementById('profileAvatar').files[0];
-const coverFile = document.getElementById('profileCover').files[0];
-const backgroundFile = document.getElementById('profileBackground').files[0];
-
-let avatarUrl = profileData?.avatar_url || null;
-let coverUrl = profileData?.cover_url || null;
-let backgroundUrl = profileData?.background_url || null;
-
-async function uploadProfileImage(file, prefix) {
-  if (!file) return { url: null, error: null };
-
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-  if (!allowedTypes.includes(file.type)) {
-    return { url: null, error: 'Допустимы только JPG, PNG и WEBP.' };
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    return { url: null, error: 'Изображение должно быть меньше 5 МБ.' };
-  }
-
-  const extensions = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/webp': 'webp'
-  };
-
-  const extension = extensions[file.type];
-  const filePath = `${user.id}/${prefix}-${Date.now()}.${extension}`;
-
-  const { error: uploadError } = await db.storage
-    .from('avatars')
-    .upload(filePath, file, {
-      upsert: false,
-      contentType: file.type
-    });
-
-  if (uploadError) {
-    return { url: null, error: uploadError.message };
-  }
-
-  const { data: publicData } = db.storage
-    .from('avatars')
-    .getPublicUrl(filePath);
-
-  return { url: publicData.publicUrl, error: null };
-}
-
-if (avatarFile) {
-  const result = await uploadProfileImage(avatarFile, 'avatar');
-
-  if (result.error) {
-    message.textContent = 'Ошибка аватара: ' + result.error;
-    saveButton.disabled = false;
-    return;
-  }
-
-  avatarUrl = result.url;
-}
-
-if (coverFile) {
-  const result = await uploadProfileImage(coverFile, 'cover');
-
-  if (result.error) {
-    message.textContent = 'Ошибка обложки: ' + result.error;
-    saveButton.disabled = false;
-    return;
-  }
-
-  coverUrl = result.url;
-}
-
-if (backgroundFile) {
-  const result = await uploadProfileImage(backgroundFile, 'background');
-
-  if (result.error) {
-    message.textContent = 'Ошибка фона: ' + result.error;
-    saveButton.disabled = false;
-    return;
-  }
-
-  backgroundUrl = result.url;
-}
-
-const updates = {
-  avatar_url: avatarUrl,
-  cover_url: coverUrl,
-  background_url: backgroundUrl,
-  display_name: document.getElementById('profileName').value.trim(),
-  phone: document.getElementById('profilePhone').value.trim(),
-  telegram: document.getElementById('profileTelegram').value.trim(),
-  whatsapp: document.getElementById('profileWhatsapp').value.trim(),
-  vk: document.getElementById('profileVk').value.trim(),
-  about: document.getElementById('profileAbout').value.trim(),
-  updated_at: new Date().toISOString()
-};
-
-const { error } = await db
-  .from('profiles')
-  .update(updates)
-  .eq('id', user.id);
-
-saveButton.disabled = false;
-
-if (error) {
-  message.textContent = 'Ошибка: ' + error.message;
-  return;
-}
-
-async function removeOldProfileImage(oldUrl, newFile) {
-  if (!newFile || !oldUrl) return;
-
-  const marker = '/avatars/';
-  const oldPath = decodeURIComponent(
-    oldUrl.split(marker)[1] || ''
-  );
-
-  if (!oldPath) return;
-
-  const { error: removeError } = await db.storage
-    .from('avatars')
-    .remove([oldPath]);
-
-  if (removeError) {
-    console.warn('Не удалось удалить старое изображение:', removeError);
-  }
-}
-
-await removeOldProfileImage(profileData?.avatar_url, avatarFile);
-await removeOldProfileImage(profileData?.cover_url, coverFile);
-await removeOldProfileImage(profileData?.background_url, backgroundFile);
-    
+  document.getElementById('closeEditProfile').addEventListener('click', () => {
     close('editProfileModal');
-    $('userProfilePage').style.display = 'none';
-document.querySelector('main.wrap').style.display = '';
-    await openProfile();
+  });
+
+  function setupProfileImagePreview(inputId, previewId, isAvatar = false) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+
+      if (!file) return;
+
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        alert('Допустимы только JPG, PNG и WEBP.');
+        input.value = '';
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Изображение должно быть меньше 5 МБ.');
+        input.value = '';
+        return;
+      }
+
+      const imageUrl = URL.createObjectURL(file);
+
+      preview.innerHTML = `
+        <img src="${imageUrl}"
+          style="
+            width:${isAvatar ? '100px' : '100%'};
+            height:${isAvatar ? '100px' : '130px'};
+            border-radius:${isAvatar ? '50%' : '12px'};
+            object-fit:cover;
+          ">
+      `;
+    });
+  }
+
+  setupProfileImagePreview('profileAvatar', 'avatarPreview', true);
+  setupProfileImagePreview('profileCover', 'coverPreview');
+  setupProfileImagePreview('profileBackground', 'backgroundPreview');
+
+  document.getElementById('editProfileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const message = document.getElementById('profileEditMessage');
+    const saveButton = e.currentTarget.querySelector('[type="submit"]');
+
+    saveButton.disabled = true;
+    message.textContent = 'Сохраняем изменения...';
+
+    const avatarFile = document.getElementById('profileAvatar').files[0];
+    const coverFile = document.getElementById('profileCover').files[0];
+    const backgroundFile = document.getElementById('profileBackground').files[0];
+
+    let avatarUrl = profileData?.avatar_url || null;
+    let coverUrl = profileData?.cover_url || null;
+    let backgroundUrl = profileData?.background_url || null;
+
+    async function uploadProfileImage(file, prefix) {
+      if (!file) return { url: null, error: null };
+
+      const extensions = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp'
+      };
+
+      const extension = extensions[file.type];
+
+      if (!extension) {
+        return { url: null, error: 'Допустимы только JPG, PNG и WEBP.' };
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        return { url: null, error: 'Изображение должно быть меньше 5 МБ.' };
+      }
+
+      const filePath = `${user.id}/${prefix}-${Date.now()}.${extension}`;
+
+      const { error: uploadError } = await db.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          upsert: false,
+          contentType: file.type
+        });
+
+      if (uploadError) {
+        return { url: null, error: uploadError.message };
+      }
+
+      const { data: publicData } = db.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      return { url: publicData.publicUrl, error: null };
+    }
+
+    try {
+      if (avatarFile) {
+        const result = await uploadProfileImage(avatarFile, 'avatar');
+        if (result.error) throw new Error('Ошибка аватара: ' + result.error);
+        avatarUrl = result.url;
+      }
+
+      if (coverFile) {
+        const result = await uploadProfileImage(coverFile, 'cover');
+        if (result.error) throw new Error('Ошибка обложки: ' + result.error);
+        coverUrl = result.url;
+      }
+
+      if (backgroundFile) {
+        const result = await uploadProfileImage(backgroundFile, 'background');
+        if (result.error) throw new Error('Ошибка фона: ' + result.error);
+        backgroundUrl = result.url;
+      }
+
+      const updates = {
+        avatar_url: avatarUrl,
+        cover_url: coverUrl,
+        background_url: backgroundUrl,
+        display_name: document.getElementById('profileName').value.trim(),
+        phone: document.getElementById('profilePhone').value.trim(),
+        telegram: document.getElementById('profileTelegram').value.trim(),
+        whatsapp: document.getElementById('profileWhatsapp').value.trim(),
+        vk: document.getElementById('profileVk').value.trim(),
+        about: document.getElementById('profileAbout').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await db
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      async function removeOldProfileImage(oldUrl, newFile) {
+        if (!newFile || !oldUrl) return;
+
+        const marker = '/avatars/';
+        const oldPath = decodeURIComponent(oldUrl.split(marker)[1] || '');
+
+        if (!oldPath) return;
+
+        const { error: removeError } = await db.storage
+          .from('avatars')
+          .remove([oldPath]);
+
+        if (removeError) {
+          console.warn('Не удалось удалить старое изображение:', removeError);
+        }
+      }
+
+      await removeOldProfileImage(profileData?.avatar_url, avatarFile);
+      await removeOldProfileImage(profileData?.cover_url, coverFile);
+      await removeOldProfileImage(profileData?.background_url, backgroundFile);
+
+      close('editProfileModal');
+      $('userProfilePage').style.display = 'none';
+      document.querySelector('main.wrap').style.display = '';
+
+      await openProfile();
+
+    } catch (error) {
+      message.textContent = 'Ошибка: ' + error.message;
+      saveButton.disabled = false;
+    }
   });
 });
 
