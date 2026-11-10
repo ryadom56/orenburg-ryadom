@@ -1439,6 +1439,7 @@ $('listingForm')?.addEventListener('submit', async e => {
 
 
 
+
 async function openSellerProfile(userId) {
   const content = $('userProfileContent');
   content.innerHTML = '<p>Загружаем профиль продавца...</p>';
@@ -1458,6 +1459,7 @@ async function openSellerProfile(userId) {
     .from('listings')
     .select('*')
     .eq('user_id', userId)
+    .eq('status', 'approved')
     .order('created_at', { ascending: false });
 
   if (listingsError) {
@@ -1475,43 +1477,101 @@ async function openSellerProfile(userId) {
   }
 
   content.innerHTML = `
-    <div class="profile-card">
-      <div style="text-align:center;padding:25px 10px">
-        ${profileData.avatar_url
-          ? `<img src="${esc(profileData.avatar_url)}" alt="Аватар" style="width:120px;height:120px;border-radius:50%;object-fit:cover">`
-          : `<div style="width:120px;height:120px;border-radius:50%;background:#e7e9ee;margin:auto;display:flex;align-items:center;justify-content:center;font-size:45px">👤</div>`}
-        <h2>${esc(profileData.display_name || 'Пользователь')}</h2>
-        <p>${esc(profileData.about || 'Пользователь пока ничего не рассказал о себе.')}</p>
-      </div>
+    <div class="profile-background">
+      <div class="profile-card">
 
-      <div style="padding:20px;background:#f7f8fa;border-radius:12px">
-        <h3>Контакты продавца</h3>
-        <p><b>Телефон:</b> ${profileData.phone ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>` : 'Не указан'}</p>
-        <p><b>Telegram:</b> ${profileData.telegram ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>` : 'Не указан'}</p>
-        <p><b>WhatsApp:</b> ${profileData.whatsapp ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>` : 'Не указан'}</p>
-        <p><b>VK:</b> ${profileData.vk ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>` : 'Не указан'}</p>
-      </div>
+        <div class="profile-cover"></div>
 
-      <div style="margin-top:25px">
-        <div class="section-head">
-          <h3>Объявления продавца</h3>
-          <b>Всего: ${(sellerListings || []).length}</b>
+        <div class="profile-header">
+          ${profileData.avatar_url
+            ? `<img
+                src="${esc(profileData.avatar_url)}"
+                alt="Аватар"
+                class="profile-avatar"
+              >`
+            : `<div class="profile-avatar profile-avatar-placeholder">👤</div>`}
+
+          <div class="profile-heading">
+            <h2>${esc(profileData.display_name || 'Пользователь')}</h2>
+            <p>${esc(profileData.about || 'Пользователь пока ничего не рассказал о себе.')}</p>
+          </div>
         </div>
 
-        <div>
-          ${(sellerListings || []).length
-            ? sellerListings.map(x => `
-              <div class="item" style="margin:12px 0;padding:12px">
-                <b>${esc(x.title)}</b>
-                <p class="price">${rub(x.price)}</p>
-                <button class="btn light" data-seller-view="${esc(x.id)}">Посмотреть объявление</button>
+        <div class="profile-content">
+
+          <section class="profile-section">
+            <h3>Контакты продавца</h3>
+
+            <div class="profile-contacts">
+              <div class="profile-contact">
+                <b>Телефон</b>
+                ${profileData.phone
+                  ? `<a href="tel:${esc(profileData.phone)}">${esc(profileData.phone)}</a>`
+                  : 'Не указан'}
               </div>
-            `).join('')
-            : '<p>У продавца пока нет объявлений.</p>'}
+
+              <div class="profile-contact">
+                <b>Telegram</b>
+                ${profileData.telegram
+                  ? `<a href="https://t.me/${encodeURIComponent(profileData.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">Написать в Telegram</a>`
+                  : 'Не указан'}
+              </div>
+
+              <div class="profile-contact">
+                <b>WhatsApp</b>
+                ${profileData.whatsapp
+                  ? `<a href="https://wa.me/${profileData.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Написать в WhatsApp</a>`
+                  : 'Не указан'}
+              </div>
+
+              <div class="profile-contact">
+                <b>VK</b>
+                ${profileData.vk
+                  ? `<a href="${esc(profileData.vk.startsWith('http') ? profileData.vk : 'https://' + profileData.vk)}" target="_blank" rel="noopener">Открыть страницу VK</a>`
+                  : 'Не указан'}
+              </div>
+            </div>
+          </section>
+
+          <section class="profile-section">
+            <div class="section-head">
+              <h3>Объявления продавца</h3>
+              <b>Всего: ${(sellerListings || []).length}</b>
+            </div>
+
+            <div class="profile-listings">
+              ${(sellerListings || []).length
+                ? sellerListings.map(x => `
+                  <div class="item" style="padding:12px">
+                    ${x.photo_url
+                      ? `<img src="${esc(x.photo_url)}" alt=""
+                          style="width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:10px">`
+                      : ''}
+                    <b>${esc(x.title)}</b>
+                    <p class="price">${rub(x.price)}</p>
+                    <button class="btn light" data-seller-view="${esc(x.id)}">
+                      Посмотреть объявление
+                    </button>
+                  </div>
+                `).join('')
+                : '<p>У продавца пока нет объявлений.</p>'}
+            </div>
+          </section>
+
         </div>
       </div>
     </div>
   `;
+
+  const cover = content.querySelector('.profile-cover');
+  if (cover && profileData.cover_url) {
+    cover.style.backgroundImage = `url("${profileData.cover_url}")`;
+  }
+
+  const background = content.querySelector('.profile-background');
+  if (background && profileData.background_url) {
+    background.style.backgroundImage = `url("${profileData.background_url}")`;
+  }
 
   $('userProfilePage').style.display = 'block';
   document.querySelector('main.wrap').style.display = 'none';
