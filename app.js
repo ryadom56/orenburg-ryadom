@@ -307,6 +307,21 @@ profile.innerHTML = `
   </div>`;
 
 
+const { data: profileIsAdmin, error: profileAdminError } =
+  await db.rpc('is_listing_admin');
+
+if (profileAdminError) {
+  console.error('Ошибка проверки администратора:', profileAdminError);
+}
+
+const profileModerationButton = $('moderationOpen');
+
+if (profileModerationButton) {
+  profileModerationButton.style.display =
+    profileIsAdmin === true ? '' : 'none';
+}
+
+    
    $('messagesPage').style.display = 'none';
 $('listingPage').style.display = 'none';
 document.getElementById('userProfilePage').style.display = 'block';
