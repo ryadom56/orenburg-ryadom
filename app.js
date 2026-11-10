@@ -1100,7 +1100,11 @@ async function loadModeration() {
   
   // Открытие страницы модерации
 
-$('moderationOpen')?.addEventListener('click', async () => {
+document.addEventListener('click', async (event) => {
+  const button = event.target.closest('#moderationOpen');
+
+  if (!button) return;
+
   await syncUser();
 
   if (!user) {
@@ -1131,7 +1135,6 @@ $('moderationOpen')?.addEventListener('click', async () => {
 
   await loadModeration();
 });
-
 // Возврат из модерации
 
 $('moderationBack')?.addEventListener('click', () => {
