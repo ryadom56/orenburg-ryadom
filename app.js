@@ -164,6 +164,7 @@ async function updateUnreadMessagesBadge() {
 let messagesRealtimeChannel = null;
 let messagesRealtimeUserId = null;
 
+
 function setupMessagesRealtime() {
   if (!db || !user) {
     if (messagesRealtimeChannel) {
@@ -207,7 +208,10 @@ function setupMessagesRealtime() {
         await updateUnreadMessagesBadge();
 
         if ($('messagesPage')?.style.display === 'block') {
-          if ($('chatWindow')?.style.display === 'block') {
+          if (
+            $('chatWindow')?.style.display === 'block' &&
+            window.activeConversationId === newMessage.conversation_id
+          ) {
             if (window.refreshActiveChat) {
               await window.refreshActiveChat();
             }
@@ -221,6 +225,7 @@ function setupMessagesRealtime() {
       console.log('Статус уведомлений:', status);
     });
 }
+
 
 async function syncUser() {
   const accountButton = $('loginOpen');
