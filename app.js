@@ -1205,13 +1205,14 @@ listingVideoInput.addEventListener('change', () => {
 
   
  
+
 $('listingForm')?.addEventListener('submit', async e => {
   e.preventDefault();
 
   if (!user) return;
 
   const msg = $('listingMessage');
-  msg.textContent = 'Публикуем объявление...';
+  msg.textContent = 'Отправляем объявление на модерацию...';
 
   const photoFiles = Array.from($('photo').files);
   const videoFile = $('video').files[0];
@@ -1321,7 +1322,10 @@ $('listingForm')?.addEventListener('submit', async e => {
     renderListingVideoPreview();
 
     close('listingModal');
+
     await load();
+
+    alert('Объявление отправлено на модерацию! После проверки оно появится на сайте.');
 
   } catch (error) {
     if (uploadedPaths.length) {
@@ -1331,6 +1335,7 @@ $('listingForm')?.addEventListener('submit', async e => {
     msg.textContent = 'Ошибка публикации: ' + error.message;
   }
 });
+
 
 
 async function openSellerProfile(userId) {
