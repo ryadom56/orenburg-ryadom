@@ -170,10 +170,32 @@
       <textarea id="description" required placeholder="Расскажи подробнее о товаре"></textarea>
     </label>
 
-    <label>
-      Контакт для связи
-      <input id="contact" type="text" required placeholder="Телефон или другой контакт">
-    </label>
+   
+<label>
+  Фотографии (до 10 штук)
+  <input
+    id="photo"
+    type="file"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+    multiple
+  >
+  <small>Можно выбрать сразу несколько фотографий.</small>
+</label>
+
+<div id="photoPreview" class="media-preview"></div>
+
+<label>
+  Видео (до 50 МБ)
+  <input
+    id="video"
+    type="file"
+    accept="video/mp4,video/webm,video/quicktime"
+  >
+  <small>Можно добавить один видеоролик.</small>
+</label>
+
+<div id="videoPreview" class="media-preview"></div>
+
 
     <label>
       Фотография
