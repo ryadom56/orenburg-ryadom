@@ -10,6 +10,7 @@
   <script src="config.js"></script>
 </head>
 <body>
+
 <header class="top">
   <a class="brand" href="#">Оренбург<span>рядом</span></a>
 
@@ -19,30 +20,40 @@
       ＋ Разместить объявление
     </button>
 
-  
-<div id="accountMenu" class="account-menu">
+    <div id="accountMenu" class="account-menu">
 
-  
-<button type="button" id="profileMenuOpen" class="account-menu-item">
-  👤 Мой профиль
-</button>
+      <button type="button" id="profileMenuOpen" class="account-menu-item">
+        👤 Мой профиль
+      </button>
 
-<button type="button" id="messagesOpen" class="account-menu-item">
-  ✉ Сообщения
-  <span id="unreadMessagesBadge" style="display:none;margin-left:auto;background:#ef4444;color:white;border-radius:50px;min-width:20px;height:20px;padding:0 6px;font-size:12px;font-weight:700;align-items:center;justify-content:center"></span>
-</button>
+      <button type="button" id="messagesOpen" class="account-menu-item">
+        ✉ Сообщения
+        <span
+          id="unreadMessagesBadge"
+          style="display:none;margin-left:auto;background:#ef4444;color:white;border-radius:50px;min-width:20px;height:20px;padding:0 6px;font-size:12px;font-weight:700;align-items:center;justify-content:center"
+        ></span>
+      </button>
 
-<button type="button" id="favoritesOpen" class="account-menu-item">
-  ♡ Избранное
-</button>
+      <button type="button" id="favoritesOpen" class="account-menu-item">
+        ♡ Избранное
+      </button>
 
-</div>
+    </div>
 
-
-    <button id="loginOpen" class="btn light">Войти</button>
+    <button
+      id="loginOpen"
+      class="btn light"
+      type="button"
+      title="Профиль"
+      aria-label="Открыть меню профиля"
+      aria-expanded="false"
+    >
+      👤
+    </button>
 
   </div>
 </header>
+
 <main class="wrap">
 
 <section class="hero" id="heroSection">
