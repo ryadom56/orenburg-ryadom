@@ -1071,11 +1071,12 @@ byId('editListingForm').addEventListener('submit', async e => {
     await load();
     await openProfile();
 
-  } catch (error) {
+    } catch (error) {
     status.textContent = 'Ошибка: ' + error.message;
     saveButton.disabled = false;
   }
 });
+  }));
 
     list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', async () => {
       const id = btn.dataset.delete;
