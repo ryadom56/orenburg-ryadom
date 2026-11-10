@@ -771,6 +771,145 @@ $('profileBack')?.addEventListener('click', () => {
   document.querySelector('main.wrap').style.display = '';
 });
 
+// Загрузка объявлений на модерацию
+
+async function loadModeration() {
+  const content = $('moderationContent');
+
+  content.innerHTML = '<p>Загружаем объявления...</p>';
+
+  const { data, error } = await db
+    .from('listings')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    content.innerHTML = `<p>Ошибка загрузки: ${esc(error.message)}</p>`;
+    return;
+  }
+
+  const rows = data || [];
+
+  if (!rows.length) {
+    content.innerHTML = '<p>🎉 Новых объявлений на проверку нет.</p>';
+    return;
+  }
+
+  content.innerHTML = rows.map(item => {
+    const photos = Array.isArray(item.photo_urls) && item.photo_urls.length
+      ? item.photo_urls
+      : (item.photo_url ? [item.photo_url] : []);
+
+    return `
+      <article class="profile-card" style="margin:20px 0;padding:20px">
+        <h3>${esc(item.title)}</h3>
+
+        <p><b>Цена:</b> ${rub(item.price)}</p>
+        <p><b>Категория:</b> ${esc(item.category || '')}</p>
+        <p><b>Описание:</b> ${esc(item.description || '')}</p>
+        <p><b>Контакт:</b> ${esc(item.contact || '')}</p>
+        <p><b>ID продавца:</b> ${esc(item.user_id || '')}</p>
+
+        ${photos.length ? `
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin:15px 0">
+            ${photos.map(url => `
+              <img
+                src="${esc(url)}"
+                alt="Фото объявления"
+                style="width:140px;height:120px;object-fit:contain;background:#f1f3f7;border-radius:10px"
+              >
+            `).join('')}
+          </div>
+        ` : '<p>Фотографии не добавлены.</p>'}
+
+        ${item.video_url ? `
+          <video
+            src="${esc(item.video_url)}"
+            controls
+            style="display:block;width:100%;max-width:450px;max-height:300px;margin:15px 0"
+          ></video>
+        ` : ''}
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+          <button class="btn primary" type="button" data-approve="${esc(item.id)}">
+            ✓ Одобрить
+          </button>
+
+          <button class="btn light" type="button" data-reject="${esc(item.id)}">
+            ✕ Отклонить
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  content.querySelectorAll('[data-approve]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const id = button.dataset.approve;
+
+      button.disabled = true;
+
+      const { error } = await db
+        .from('listings')
+        .update({
+          status: 'approved',
+          moderation_note: null,
+          moderated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .eq('status', 'pending');
+
+      if (error) {
+        alert('Не удалось одобрить объявление: ' + error.message);
+        button.disabled = false;
+        return;
+      }
+
+      await loadModeration();
+      await load();
+    });
+  });
+
+  content.querySelectorAll('[data-reject]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const id = button.dataset.reject;
+
+      const reason = prompt(
+        'Укажи причину отклонения объявления:'
+      );
+
+      if (reason === null) return;
+
+      if (!reason.trim()) {
+        alert('Нужно указать причину отклонения.');
+        return;
+      }
+
+      button.disabled = true;
+
+      const { error } = await db
+        .from('listings')
+        .update({
+          status: 'rejected',
+          moderation_note: reason.trim(),
+          moderated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .eq('status', 'pending');
+
+      if (error) {
+        alert('Не удалось отклонить объявление: ' + error.message);
+        button.disabled = false;
+        return;
+      }
+
+      await loadModeration();
+      await load();
+    });
+  });
+}
+  
   // Открытие страницы модерации
 
 $('moderationOpen')?.addEventListener('click', async () => {
