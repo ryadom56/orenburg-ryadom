@@ -1382,19 +1382,20 @@ $('listingPageBack').addEventListener('click', () => {
   document.querySelector('main.wrap').style.display = '';
 });
 
+
 $('loginOpen').addEventListener('click', async () => {
   await syncUser();
 
   if (user) {
-    if (window.matchMedia('(max-width: 650px)').matches) {
-      $('accountMenu').classList.toggle('open');
-    } else {
-      await openProfile();
-    }
+    const menu = $('accountMenu');
+    const isOpen = menu.classList.toggle('open');
+
+    $('loginOpen').setAttribute('aria-expanded', String(isOpen));
     return;
   }
 
   $('accountMenu')?.classList.remove('open');
+  $('loginOpen').setAttribute('aria-expanded', 'false');
 
   signup = false;
   $('authTitle').textContent = 'Вход';
@@ -1402,6 +1403,7 @@ $('loginOpen').addEventListener('click', async () => {
   $('authMessage').textContent = '';
   open('authModal');
 });
+
 
 $('profileMenuOpen').addEventListener('click', async () => {
   $('accountMenu').classList.remove('open');
