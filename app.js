@@ -1941,9 +1941,10 @@ async function openChat(conversationId) {
     box.scrollTop = box.scrollHeight;
   }
 
-  await markMessagesRead();
-  await refreshMessages();
-
+ await markMessagesRead();
+await refreshMessages();
+await updateUnreadMessagesBadge();
+  
   $('messageForm').addEventListener('submit', async e => {
     e.preventDefault();
 
