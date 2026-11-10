@@ -568,6 +568,7 @@ document.querySelector('main.wrap').style.display = '';
     $('myCount').textContent = `Всего: ${mine.length}`;
 
    
+
 list.innerHTML = mine.length ? mine.map(x => {
   const statusInfo = {
     pending: {
@@ -594,6 +595,10 @@ list.innerHTML = mine.length ? mine.map(x => {
 
   const currentStatus = statusInfo[x.status] || statusInfo.pending;
 
+  const editButtonText = x.status === 'revision_requested'
+    ? 'Исправить и отправить повторно'
+    : 'Редактировать';
+
   return `
     <div class="item" style="margin:12px 0;padding:12px">
       <div style="display:flex;gap:12px;align-items:center">
@@ -618,7 +623,7 @@ list.innerHTML = mine.length ? mine.map(x => {
 
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
         <button class="btn light" data-view="${esc(x.id)}">Посмотреть</button>
-        <button class="btn light" data-edit="${esc(x.id)}">Редактировать</button>
+        <button class="btn light" data-edit="${esc(x.id)}">${editButtonText}</button>
         <button class="btn danger" data-delete="${esc(x.id)}">Удалить</button>
       </div>
     </div>
