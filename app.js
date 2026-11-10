@@ -550,19 +550,6 @@ $('listingPage').style.display = 'none';
 document.getElementById('userProfilePage').style.display = 'block';
 document.querySelector('main.wrap').style.display = 'none';
 
-const deleteAvatarButton = document.getElementById('deleteAvatar');
-
-if (deleteAvatarButton) {
-  deleteAvatarButton.addEventListener('click', async () => {
-    if (!confirm('Удалить фотографию профиля?')) return;
-
-    deleteAvatarButton.disabled = true;
-
-    const marker = '/avatars/';
-    const oldPath = decodeURIComponent(
-      profileData.avatar_url.split(marker)[1] || ''
-    );
-
     if (oldPath) {
       const { error: removeError } = await db.storage
         .from('avatars')
