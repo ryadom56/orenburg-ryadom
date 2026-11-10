@@ -2224,6 +2224,10 @@ async function showDetail(id) {
               ${favorites.has(String(x.id)) ? '♥ В избранном' : '♡ В избранное'}
             </button>
 
+<button type="button" id="copyListingLink" class="btn light">
+  🔗 Копировать ссылку
+</button>
+
             ${user && user.id === x.user_id ? `
               <button type="button" id="deleteListing" class="btn danger">
                 Удалить объявление
@@ -2316,6 +2320,19 @@ async function showDetail(id) {
   $('messagesPage').style.display = 'none';
   $('listingPage').style.display = 'block';
 
+  // Добавляем ID объявления в адресную строку
+
+  const currentUrl = new URL(window.location.href);
+
+  if (currentUrl.searchParams.get('listing') !== String(x.id)) {
+    currentUrl.searchParams.set('listing', x.id);
+    window.history.pushState(
+      { listingId: String(x.id) },
+      '',
+      currentUrl
+    );
+  }
+
   // Переход к профилю продавца
 
   $('sellerProfileOpen').addEventListener('click', () => {
@@ -2339,6 +2356,27 @@ async function showDetail(id) {
     await toggleFavorite(x.id);
     await showDetail(x.id);
   });
+
+    // Копирование прямой ссылки на объявление
+
+  const copyLinkButton = $('copyListingLink');
+
+  if (copyLinkButton) {
+    copyLinkButton.addEventListener('click', async () => {
+      const shareUrl = new URL(
+        window.location.origin + window.location.pathname
+      );
+
+      shareUrl.searchParams.set('listing', x.id);
+
+      try {
+        await navigator.clipboard.writeText(shareUrl.toString());
+        copyLinkButton.textContent = '✓ Ссылка скопирована';
+      } catch (error) {
+        prompt('Скопируй ссылку на объявление:', shareUrl.toString());
+      }
+    });
+  }
 
   // Удаление объявления
 
