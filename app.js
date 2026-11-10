@@ -65,52 +65,60 @@ async function toggleFavorite(id) {
   render();
 }
   
-  function render() {
-    const q = $('search').value.trim().toLowerCase();
-    const cat = $('category').value;
-    const sort = $('sort').value;
-    let rows = listings.filter(x =>
-  (!showingFavorites || favorites.has(String(x.id))) &&
-  (!cat || x.category === cat) &&
-  (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q))
-);
-    if (sort === 'cheap') rows.sort((a,b) => a.price-b.price);
-    else if (sort === 'expensive') rows.sort((a,b) => b.price-a.price);
-    else rows.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+ 
+function render() {
+  const q = $('search').value.trim().toLowerCase();
+  const cat = $('category').value;
+  const sort = $('sort').value;
 
-    $('grid').innerHTML = rows.length ? rows.map(x => `
-      <article class="item" data-id="${esc(x.id)}">
-<div class="photo" style="position:relative">
-${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не добавлено'}
+  let rows = listings.filter(x =>
+    x.status === 'approved' &&
+    (!showingFavorites || favorites.has(String(x.id))) &&
+    (!cat || x.category === cat) &&
+    (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q))
+  );
 
-<button
-    type="button"
-    class="favorite-btn"
-    data-id="${esc(x.id)}"
-    style="position:absolute;top:10px;right:10px;z-index:2;background:white;border:0;border-radius:50%;width:38px;height:38px;font-size:23px;cursor:pointer;color:${favorites.has(String(x.id)) ? '#e11d48' : '#777'}"
-    aria-label="Добавить в избранное"
->${favorites.has(String(x.id)) ? '♥' : '♡'}</button>
-</div>
-        <div class="item-body">
-          <div class="price">${rub(x.price)}</div>
-          <h3>${esc(x.title)}</h3>
-          <div class="meta">${esc(x.category)} · Оренбург</div>
-        </div>
-      </article>`).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений пока нет. Будь первым — размести своё!'}</div>`;
+  if (sort === 'cheap') rows.sort((a,b) => a.price-b.price);
+  else if (sort === 'expensive') rows.sort((a,b) => b.price-a.price);
+  else rows.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
 
-    $('grid').querySelectorAll('.favorite-btn').forEach(button => {
-  button.addEventListener('click', async e => {
-    e.preventDefault();
-    e.stopPropagation();
-    await toggleFavorite(button.dataset.id);
+  $('grid').innerHTML = rows.length ? rows.map(x => `
+    <article class="item" data-id="${esc(x.id)}">
+      <div class="photo" style="position:relative">
+        ${x.photo_url ? `<img src="${esc(x.photo_url)}" alt="">` : 'Фото не добавлено'}
+
+        <button
+          type="button"
+          class="favorite-btn"
+          data-id="${esc(x.id)}"
+          style="position:absolute;top:10px;right:10px;z-index:2;background:white;border:0;border-radius:50%;width:38px;height:38px;font-size:23px;cursor:pointer;color:${favorites.has(String(x.id)) ? '#e11d48' : '#777'}"
+          aria-label="Добавить в избранное"
+        >${favorites.has(String(x.id)) ? '♥' : '♡'}</button>
+      </div>
+
+      <div class="item-body">
+        <div class="price">${rub(x.price)}</div>
+        <h3>${esc(x.title)}</h3>
+        <div class="meta">${esc(x.category)} · Оренбург</div>
+      </div>
+    </article>
+  `).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений пока нет. Будь первым — размести своё!'}</div>`;
+
+  $('grid').querySelectorAll('.favorite-btn').forEach(button => {
+    button.addEventListener('click', async e => {
+      e.preventDefault();
+      e.stopPropagation();
+      await toggleFavorite(button.dataset.id);
+    });
   });
-});
 
-$('grid').querySelectorAll('article.item[data-id]').forEach(el => {
-  el.addEventListener('click', () => showDetail(el.dataset.id));
-});
-    $('status').textContent = `Найдено объявлений: ${rows.length}`;
-  }
+  $('grid').querySelectorAll('article.item[data-id]').forEach(el => {
+    el.addEventListener('click', () => showDetail(el.dataset.id));
+  });
+
+  $('status').textContent = `Найдено объявлений: ${rows.length}`;
+}
+
 
   async function load() {
     if (!db) { configStatus(); render(); return; }
