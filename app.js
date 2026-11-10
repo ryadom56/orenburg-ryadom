@@ -1458,6 +1458,7 @@ async function startConversation(listing) {
 }
   
  
+
 async function showDetail(id) {
   const x = listings.find(a => String(a.id) === String(id));
   if (!x) return;
@@ -1471,15 +1472,45 @@ async function showDetail(id) {
     .eq('id', x.user_id)
     .maybeSingle();
 
+  const photos = Array.isArray(x.photo_urls) && x.photo_urls.length
+    ? x.photo_urls
+    : (x.photo_url ? [x.photo_url] : []);
+
+  const videoUrl = x.video_url || null;
+
   content.innerHTML = `
     <div class="listing-full-card">
 
       <div class="listing-main-info">
 
         <div class="listing-gallery">
-          ${x.photo_url
-            ? `<img src="${esc(x.photo_url)}" alt="${esc(x.title)}">`
-            : `<div class="listing-no-photo">📷 Нет фотографии</div>`}
+          <div class="listing-gallery-main" id="listingMainMedia">
+            ${photos.length
+              ? `<img src="${esc(photos[0])}" alt="${esc(x.title)}">`
+              : videoUrl
+                ? `<video src="${esc(videoUrl)}" controls playsinline></video>`
+                : `<div class="listing-no-photo">📷 Нет фотографии</div>`}
+          </div>
+
+          ${photos.length || videoUrl ? `
+            <div class="listing-gallery-thumbs">
+              ${photos.map((photo, index) => `
+                <button
+                  type="button"
+                  class="listing-thumb ${index === 0 ? 'active' : ''}"
+                  data-photo-index="${index}"
+                >
+                  <img src="${esc(photo)}" alt="Фото ${index + 1}">
+                </button>
+              `).join('')}
+
+              ${videoUrl ? `
+                <button type="button" class="listing-thumb listing-video-thumb" data-show-video>
+                  ▶ Видео
+                </button>
+              ` : ''}
+            </div>
+          ` : ''}
         </div>
 
         <div class="listing-details">
@@ -1553,6 +1584,45 @@ async function showDetail(id) {
     </div>
   `;
 
+  // Переключение фотографий и видео
+
+  const mainMedia = $('listingMainMedia');
+
+  content.querySelectorAll('[data-photo-index]').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.photoIndex);
+      const photo = photos[index];
+
+      if (!photo) return;
+
+      mainMedia.innerHTML = `
+        <img src="${esc(photo)}" alt="${esc(x.title)}">
+      `;
+
+      content.querySelectorAll('.listing-thumb').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      button.classList.add('active');
+    });
+  });
+
+  const videoButton = content.querySelector('[data-show-video]');
+
+  if (videoButton) {
+    videoButton.addEventListener('click', () => {
+      mainMedia.innerHTML = `
+        <video src="${esc(videoUrl)}" controls autoplay playsinline></video>
+      `;
+
+      content.querySelectorAll('.listing-thumb').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      videoButton.classList.add('active');
+    });
+  }
+
   document.querySelector('main.wrap').style.display = 'none';
   $('userProfilePage').style.display = 'none';
   $('messagesPage').style.display = 'none';
@@ -1605,6 +1675,7 @@ async function showDetail(id) {
     });
   }
 }
+
 
 
   $('searchBtn').addEventListener('click',render);
