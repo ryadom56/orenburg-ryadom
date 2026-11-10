@@ -551,57 +551,101 @@ setupProfileImagePreview('profileBackground', 'backgroundPreview');
 
 
 const avatarFile = document.getElementById('profileAvatar').files[0];
+const coverFile = document.getElementById('profileCover').files[0];
+const backgroundFile = document.getElementById('profileBackground').files[0];
 
 let avatarUrl = profileData?.avatar_url || null;
+let coverUrl = profileData?.cover_url || null;
+let backgroundUrl = profileData?.background_url || null;
 
-if (avatarFile) {
-  if (avatarFile.size > 5 * 1024 * 1024) {
-    message.textContent = 'Фото должно быть меньше 5 МБ.';
-    saveButton.disabled = false;
-    return;
+async function uploadProfileImage(file, prefix) {
+  if (!file) return { url: null, error: null };
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+  if (!allowedTypes.includes(file.type)) {
+    return { url: null, error: 'Допустимы только JPG, PNG и WEBP.' };
   }
 
-  const extension = avatarFile.name.split('.').pop().toLowerCase();
-  const filePath = `${user.id}/avatar-${Date.now()}.${extension}`;
-console.log('USER ID:', user.id);
-console.log('AVATAR PATH:', filePath);
+  if (file.size > 5 * 1024 * 1024) {
+    return { url: null, error: 'Изображение должно быть меньше 5 МБ.' };
+  }
 
-const { data: sessionData } = await db.auth.getSession();
+  const extensions = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp'
+  };
 
-console.log('SESSION USER:', sessionData.session?.user?.id);
-console.log('CURRENT USER:', user?.id);
-console.log('SESSION EXISTS:', !!sessionData.session);
-  
+  const extension = extensions[file.type];
+  const filePath = `${user.id}/${prefix}-${Date.now()}.${extension}`;
+
   const { error: uploadError } = await db.storage
     .from('avatars')
-    .upload(filePath, avatarFile, {
-  upsert: false,
-  contentType: avatarFile.type
-});
+    .upload(filePath, file, {
+      upsert: false,
+      contentType: file.type
+    });
 
   if (uploadError) {
-    message.textContent = 'Ошибка загрузки фото: ' + uploadError.message;
-    saveButton.disabled = false;
-    return;
+    return { url: null, error: uploadError.message };
   }
 
   const { data: publicData } = db.storage
     .from('avatars')
     .getPublicUrl(filePath);
 
-  avatarUrl = publicData.publicUrl;
+  return { url: publicData.publicUrl, error: null };
 }
-    
-    const updates = {
+
+if (avatarFile) {
+  const result = await uploadProfileImage(avatarFile, 'avatar');
+
+  if (result.error) {
+    message.textContent = 'Ошибка аватара: ' + result.error;
+    saveButton.disabled = false;
+    return;
+  }
+
+  avatarUrl = result.url;
+}
+
+if (coverFile) {
+  const result = await uploadProfileImage(coverFile, 'cover');
+
+  if (result.error) {
+    message.textContent = 'Ошибка обложки: ' + result.error;
+    saveButton.disabled = false;
+    return;
+  }
+
+  coverUrl = result.url;
+}
+
+if (backgroundFile) {
+  const result = await uploadProfileImage(backgroundFile, 'background');
+
+  if (result.error) {
+    message.textContent = 'Ошибка фона: ' + result.error;
+    saveButton.disabled = false;
+    return;
+  }
+
+  backgroundUrl = result.url;
+}
+
+const updates = {
   avatar_url: avatarUrl,
-      display_name: document.getElementById('profileName').value.trim(),
-      phone: document.getElementById('profilePhone').value.trim(),
-      telegram: document.getElementById('profileTelegram').value.trim(),
-      whatsapp: document.getElementById('profileWhatsapp').value.trim(),
-      vk: document.getElementById('profileVk').value.trim(),
-      about: document.getElementById('profileAbout').value.trim(),
-      updated_at: new Date().toISOString()
-    };
+  cover_url: coverUrl,
+  background_url: backgroundUrl,
+  display_name: document.getElementById('profileName').value.trim(),
+  phone: document.getElementById('profilePhone').value.trim(),
+  telegram: document.getElementById('profileTelegram').value.trim(),
+  whatsapp: document.getElementById('profileWhatsapp').value.trim(),
+  vk: document.getElementById('profileVk').value.trim(),
+  about: document.getElementById('profileAbout').value.trim(),
+  updated_at: new Date().toISOString()
+};
 
     const { error } = await db
       .from('profiles')
