@@ -984,76 +984,99 @@ list.innerHTML = mine.length ? mine.map(x => {
     if (e.target === modal) closeEdit();
   });
 
-  byId('editListingForm').addEventListener('submit', async e => {
-    e.preventDefault();
+  
+byId('editListingForm').addEventListener('submit', async e => {
+  e.preventDefault();
 
-    const title = byId('editTitle').value.trim();
-    const price = Number(byId('editPrice').value);
-    const category = byId('editCategory').value;
-    const description = byId('editDescription').value.trim();
-    const contact = byId('editContact').value.trim();
-    const status = byId('editStatus');
-    let photo_url = x.photo_url || null;
-const file = byId('editPhoto').files[0];
+  const title = byId('editTitle').value.trim();
+  const price = Number(byId('editPrice').value);
+  const category = byId('editCategory').value;
+  const description = byId('editDescription').value.trim();
+  const contact = byId('editContact').value.trim();
+  const status = byId('editStatus');
+  const saveButton = modal.querySelector('[type="submit"]');
 
-if (file) {
-  if (file.size > 5 * 1024 * 1024) {
+  let photo_url = x.photo_url || null;
+  const file = byId('editPhoto').files[0];
+
+  if (!title || !category || !Number.isFinite(price) || price < 0) {
+    status.textContent = 'Проверь название, категорию и цену.';
+    return;
+  }
+
+  if (file && !file.type.startsWith('image/')) {
+    status.textContent = 'Можно загружать только изображения.';
+    return;
+  }
+
+  if (file && file.size > 5 * 1024 * 1024) {
     status.textContent = 'Фото должно быть не больше 5 МБ.';
     return;
   }
 
-  const ext = (file.name.split('.').pop() || 'jpg')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '');
+  saveButton.disabled = true;
+  status.textContent = 'Сохраняем изменения...';
 
-  const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+  try {
+    if (file) {
+      const ext = (file.name.split('.').pop() || 'jpg')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
 
-  const up = await db.storage
-    .from('listing-photos')
-    .upload(path, file, {
-      upsert: false,
-      contentType: file.type
-    });
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
-  if (up.error) {
-    status.textContent = 'Ошибка загрузки фото: ' + up.error.message;
-    return;
-  }
+      const up = await db.storage
+        .from('listing-photos')
+        .upload(path, file, {
+          upsert: false,
+          contentType: file.type
+        });
 
-  photo_url = db.storage
-    .from('listing-photos')
-    .getPublicUrl(path).data.publicUrl;
-}
-    const saveButton = modal.querySelector('[type="submit"]');
+      if (up.error) {
+        throw new Error('Ошибка загрузки фото: ' + up.error.message);
+      }
 
-    if (!title || !category || !Number.isFinite(price) || price < 0) {
-      status.textContent = 'Проверь название, категорию и цену.';
-      return;
+      photo_url = db.storage
+        .from('listing-photos')
+        .getPublicUrl(path).data.publicUrl;
     }
 
-    saveButton.disabled = true;
-    status.textContent = 'Сохраняем изменения...';
+    const { error } = await db
+      .from('listings')
+      .update({
+        title,
+        price,
+        category,
+        description,
+        contact,
+        photo_url,
 
-   const { error } = await db.from('listings').update({
-  title,
-  price,
-  category,
-  description,
-  contact,
-  photo_url
-}).eq('id', x.id).eq('user_id', user.id);
+        // После изменения отправляем объявление на проверку
+        status: 'pending',
+        moderation_note: null,
+        moderated_at: null
+
+      })
+      .eq('id', x.id)
+      .eq('user_id', user.id);
 
     if (error) {
-      status.textContent = 'Ошибка: ' + error.message;
-      saveButton.disabled = false;
-      return;
+      throw new Error(error.message);
     }
 
     modal.remove();
+
+    alert('Изменения отправлены на повторную модерацию. После проверки объявление снова появится на сайте.');
+
     await load();
     await openProfile();
-  });
-}));
+
+  } catch (error) {
+    status.textContent = 'Ошибка: ' + error.message;
+    saveButton.disabled = false;
+  }
+});
+
     list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', async () => {
       const id = btn.dataset.delete;
       if (!confirm('Удалить это объявление?')) return;
