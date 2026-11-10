@@ -1926,9 +1926,13 @@ async function loadConversations() {
 }
 
 
+
 async function openChat(conversationId) {
   const chat = $('chatWindow');
   const list = $('conversationsList');
+
+  window.activeConversationId = null;
+  window.refreshActiveChat = null;
 
   list.style.display = 'none';
   chat.style.display = 'block';
@@ -1944,6 +1948,8 @@ async function openChat(conversationId) {
     chat.innerHTML = '<p>Не удалось открыть переписку.</p>';
     return;
   }
+
+  window.activeConversationId = conversationId;
 
   const otherId = conversation.buyer_id === user.id
     ? conversation.seller_id
@@ -1977,8 +1983,12 @@ async function openChat(conversationId) {
   `;
 
   $('chatBack').addEventListener('click', async () => {
+    window.activeConversationId = null;
+    window.refreshActiveChat = null;
+
     chat.style.display = 'none';
     list.style.display = 'block';
+
     await loadConversations();
   });
 
@@ -2024,10 +2034,18 @@ async function openChat(conversationId) {
     box.scrollTop = box.scrollHeight;
   }
 
- await markMessagesRead();
-await refreshMessages();
-await updateUnreadMessagesBadge();
-  
+  window.refreshActiveChat = async () => {
+    if (window.activeConversationId !== conversationId) return;
+
+    await markMessagesRead();
+    await refreshMessages();
+    await updateUnreadMessagesBadge();
+  };
+
+  await markMessagesRead();
+  await refreshMessages();
+  await updateUnreadMessagesBadge();
+
   $('messageForm').addEventListener('submit', async e => {
     e.preventDefault();
 
