@@ -44,37 +44,85 @@
   </div>
 </header>
 <main class="wrap">
- <section class="hero" id="heroSection">
-  <div class="searchbar">
-  <input id="search" placeholder="Что ищем? Например, iPhone или диван">
 
-<select id="category">
-  <option value="">Все категории</option>
-  <option>Авто и запчасти</option>
-  <option>Недвижимость</option>
-  <option>Электроника</option>
-  <option>Одежда и обувь</option>
-  <option>Дом и ремонт</option>
-  <option>Работа</option>
-  <option>Услуги</option>
-  <option>Животные</option>
-  <option>Разное</option>
-</select>
+<section class="hero" id="heroSection">
+  <div class="hero-content">
+    <div class="hero-label">
+      <span class="hero-label-dot"></span>
+      МАРКЕТПЛЕЙС ОРЕНБУРГСКОЙ ОБЛАСТИ
+    </div>
 
-<input id="minPrice" type="number" min="0" placeholder="Цена от, ₽">
+    <h1>
+      Находи своё.<br>
+      <span>Продавай рядом.</span>
+    </h1>
 
-<input id="maxPrice" type="number" min="0" placeholder="Цена до, ₽">
+    <p class="hero-description">
+      Покупай, продавай и находи нужное среди объявлений жителей Оренбурга и области.
+    </p>
 
-<select id="sort">
-  <option value="new">Сначала новые</option>
-  <option value="cheap">Сначала дешевле</option>
-  <option value="expensive">Сначала дороже</option>
-</select>
+    <div class="searchbar">
+      <div class="search-field">
+        <span class="search-icon">⌕</span>
+        <input id="search" placeholder="Что хотите найти? Например, iPhone или диван">
+      </div>
 
-<button id="searchBtn" class="btn primary">Найти</button>
-<button id="resetFilters" class="btn">Сбросить</button>
+      <button id="searchBtn" class="btn primary">
+        Найти
+        <span>→</span>
+      </button>
+    </div>
+
+    <div class="hero-categories">
+      <span>Популярное:</span>
+      <button type="button" data-category="Авто и запчасти">Авто</button>
+      <button type="button" data-category="Недвижимость">Недвижимость</button>
+      <button type="button" data-category="Электроника">Электроника</button>
+      <button type="button" data-category="Работа">Работа</button>
+    </div>
   </div>
 </section>
+
+<section class="catalog-toolbar">
+  <div class="catalog-heading">
+    <div>
+      <div class="catalog-overline">ВЫБИРАЙ И НАХОДИ</div>
+      <h2 id="listingHeading">Свежие объявления</h2>
+      <p id="status">Загружаем объявления…</p>
+    </div>
+  </div>
+
+  <div class="catalog-filters">
+    <select id="category">
+      <option value="">Все категории</option>
+      <option>Авто и запчасти</option>
+      <option>Недвижимость</option>
+      <option>Электроника</option>
+      <option>Одежда и обувь</option>
+      <option>Дом и ремонт</option>
+      <option>Работа</option>
+      <option>Услуги</option>
+      <option>Животные</option>
+      <option>Разное</option>
+    </select>
+
+    <input id="minPrice" type="number" min="0" placeholder="Цена от, ₽">
+
+    <input id="maxPrice" type="number" min="0" placeholder="Цена до, ₽">
+
+    <select id="sort">
+      <option value="new">Сначала новые</option>
+      <option value="cheap">Сначала дешевле</option>
+      <option value="expensive">Сначала дороже</option>
+    </select>
+
+    <button id="resetFilters" class="btn light">Сбросить</button>
+  </div>
+</section>
+
+<section id="grid" class="grid"></section>
+</main>
+
 
 <section class="section-head">
   <div>
