@@ -509,47 +509,46 @@ editModal.innerHTML = `
   const avatarInput = document.getElementById('profileAvatar');
 const avatarPreview = document.getElementById('avatarPreview');
 
-avatarInput.addEventListener('change', () => {
-  const file = avatarInput.files[0];
 
-  if (!file) return;
+function setupProfileImagePreview(inputId, previewId, isAvatar = false) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
 
-  if (!file.type.startsWith('image/')) {
-    alert('Выбери изображение.');
-    avatarInput.value = '';
-    return;
-  }
+  input.addEventListener('change', () => {
+    const file = input.files[0];
 
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Фото должно быть меньше 5 МБ.');
-    avatarInput.value = '';
-    return;
-  }
+    if (!file) return;
 
-  const imageUrl = URL.createObjectURL(file);
+    if (!file.type.startsWith('image/')) {
+      alert('Выбери изображение.');
+      input.value = '';
+      return;
+    }
 
-  avatarPreview.innerHTML = `
-    <img src="${imageUrl}"
-      style="width:100px;height:100px;border-radius:50%;object-fit:cover">
-  `;
-});
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Изображение должно быть меньше 5 МБ.');
+      input.value = '';
+      return;
+    }
 
-  document.getElementById('closeEditProfile').addEventListener('click', () => {
-    close('editProfileModal');
+    const imageUrl = URL.createObjectURL(file);
+
+    preview.innerHTML = `
+      <img src="${imageUrl}"
+        style="
+          width:${isAvatar ? '100px' : '100%'};
+          height:${isAvatar ? '100px' : '130px'};
+          border-radius:${isAvatar ? '50%' : '12px'};
+          object-fit:cover;
+        ">
+    `;
   });
+}
 
-  editModal.addEventListener('click', e => {
-    if (e.target === editModal) close('editProfileModal');
-  });
+setupProfileImagePreview('profileAvatar', 'avatarPreview', true);
+setupProfileImagePreview('profileCover', 'coverPreview');
+setupProfileImagePreview('profileBackground', 'backgroundPreview');
 
-  document.getElementById('editProfileForm').addEventListener('submit', async e => {
-    e.preventDefault();
-
-    const message = document.getElementById('profileEditMessage');
-    const saveButton = e.target.querySelector('button[type="submit"]');
-
-    saveButton.disabled = true;
-    message.textContent = 'Сохраняем...';
 
 const avatarFile = document.getElementById('profileAvatar').files[0];
 
