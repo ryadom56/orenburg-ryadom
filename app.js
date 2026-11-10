@@ -1901,6 +1901,7 @@ async function startConversation(listing) {
   
  
 
+
 async function showDetail(id) {
   const x = listings.find(a => String(a.id) === String(id));
   if (!x) return;
@@ -1947,7 +1948,11 @@ async function showDetail(id) {
               `).join('')}
 
               ${videoUrl ? `
-                <button type="button" class="listing-thumb listing-video-thumb" data-show-video>
+                <button
+                  type="button"
+                  class="listing-thumb listing-video-thumb"
+                  data-show-video
+                >
                   ▶ Видео
                 </button>
               ` : ''}
@@ -1963,12 +1968,13 @@ async function showDetail(id) {
 
           <h1>${esc(x.title)}</h1>
 
-          <div class="listing-description-block">
-            <h3>Описание объявления</h3>
-            <p class="listing-description">${esc(x.description || 'Описание не указано.')}</p>
+          <div class="listing-price-card">
+            <span class="listing-price-caption">Цена объявления</span>
+            <div class="listing-full-price">${rub(x.price)}</div>
           </div>
 
           <div class="listing-actions">
+
             ${user && user.id !== x.user_id ? `
               <button type="button" id="writeSeller" class="btn primary">
                 ✉ Написать продавцу
@@ -1984,49 +1990,46 @@ async function showDetail(id) {
                 Удалить объявление
               </button>
             ` : ''}
+
+          </div>
+
+          <div class="listing-description-block">
+            <h3>Описание объявления</h3>
+            <p class="listing-description">
+              ${esc(x.description || 'Описание не указано.')}
+            </p>
           </div>
 
         </div>
       </div>
 
-      <aside class="listing-sidebar">
+      <div class="listing-seller-card">
 
-        <div class="listing-price-card">
-          <span class="listing-price-caption">Цена объявления</span>
-          <div class="listing-full-price">${rub(x.price)}</div>
+        <h3>Продавец</h3>
 
-          ${user && user.id !== x.user_id ? `
-            <button type="button" id="sidebarWriteSeller" class="btn primary full">
-              ✉ Написать продавцу
-            </button>
-          ` : ''}
-        </div>
+        <div class="listing-seller-info">
 
-        <div class="listing-seller-card">
-          <h3>Продавец</h3>
+          ${seller?.avatar_url
+            ? `<img src="${esc(seller.avatar_url)}" alt="Аватар продавца">`
+            : '<div class="listing-seller-avatar">👤</div>'}
 
-          <div class="listing-seller-info">
-            ${seller?.avatar_url
-              ? `<img src="${esc(seller.avatar_url)}" alt="Аватар продавца">`
-              : '<div class="listing-seller-avatar">👤</div>'}
-
-            <div>
-              <b>${esc(seller?.display_name || 'Пользователь')}</b>
-              <p>${esc(seller?.about || 'Информация о продавце не указана.')}</p>
-            </div>
+          <div>
+            <b>${esc(seller?.display_name || 'Пользователь')}</b>
+            <p>${esc(seller?.about || 'Информация о продавце не указана.')}</p>
           </div>
 
-          <button type="button" id="sellerProfileOpen" class="btn light full">
-            Профиль продавца
-          </button>
         </div>
 
-      </aside>
+        <button type="button" id="sellerProfileOpen" class="btn light full">
+          Профиль продавца
+        </button>
+
+      </div>
 
     </div>
   `;
 
-  // Переключение фотографий и видео
+  // Переключение фотографий
 
   const mainMedia = $('listingMainMedia');
 
@@ -2049,6 +2052,8 @@ async function showDetail(id) {
     });
   });
 
+  // Переключение на видео
+
   const videoButton = content.querySelector('[data-show-video]');
 
   if (videoButton) {
@@ -2065,18 +2070,23 @@ async function showDetail(id) {
     });
   }
 
+  // Показываем страницу объявления
+
   document.querySelector('main.wrap').style.display = 'none';
   $('userProfilePage').style.display = 'none';
   $('messagesPage').style.display = 'none';
   $('listingPage').style.display = 'block';
+
+  // Переход к профилю продавца
 
   $('sellerProfileOpen').addEventListener('click', () => {
     $('listingPage').style.display = 'none';
     openSellerProfile(x.user_id);
   });
 
+  // Написать продавцу
+
   const writeButton = $('writeSeller');
-  const sidebarWriteButton = $('sidebarWriteSeller');
 
   if (writeButton) {
     writeButton.addEventListener('click', () => {
@@ -2084,16 +2094,14 @@ async function showDetail(id) {
     });
   }
 
-  if (sidebarWriteButton) {
-    sidebarWriteButton.addEventListener('click', () => {
-      startConversation(x);
-    });
-  }
+  // Избранное
 
   $('listingFavorite').addEventListener('click', async () => {
     await toggleFavorite(x.id);
     await showDetail(x.id);
   });
+
+  // Удаление объявления
 
   const deleteButton = $('deleteListing');
 
