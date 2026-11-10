@@ -130,6 +130,11 @@ function render() {
 
 async function syncUser() {
   const accountButton = $('loginOpen');
+  const moderationButton = $('moderationOpen');
+
+  if (moderationButton) {
+    moderationButton.style.display = 'none';
+  }
 
   if (!db) {
     accountButton.innerHTML = 'Войти';
@@ -138,15 +143,14 @@ async function syncUser() {
     return;
   }
 
-const { data, error } = await db.auth.getSession();
+  const { data, error } = await db.auth.getSession();
 
-if (error) {
-  console.error('Ошибка получения сессии:', error);
-  return;
-}
+  if (error) {
+    console.error('Ошибка получения сессии:', error);
+    return;
+  }
 
-user = data.session?.user || null;
-  
+  user = data.session?.user || null;
   favorites.clear();
 
   if (user) {
@@ -185,6 +189,15 @@ user = data.session?.user || null;
         (favoriteRows || []).map(item => String(item.listing_id))
       );
     }
+
+    const { data: adminStatus, error: adminError } = await db.rpc('is_listing_admin');
+
+    if (adminError) {
+      console.error('Ошибка проверки администратора:', adminError);
+    } else if (adminStatus === true && moderationButton) {
+      moderationButton.style.display = '';
+    }
+
   } else {
     accountButton.innerHTML = 'Войти';
     accountButton.title = 'Войти';
