@@ -482,29 +482,32 @@
 }
 
 
+
 /* =================================
-   НОВЫЙ ДИЗАЙН — ОРЕНБУРГ РЯДОМ
+   ОБНОВЛЁННЫЙ ДИЗАЙН — ОРЕНБУРГ РЯДОМ
+   Сохраняем прежнюю сине-серую палитру
 ================================= */
 
 :root {
-  --ink: #202a2a;
-  --muted: #778381;
-  --line: #e5ece8;
-  --blue: #159b83;
-  --bg: #f5f8f6;
+  --ink: #20242d;
+  --muted: #747b88;
+  --line: #e7e9ee;
+  --blue: #2563eb;
+  --bg: #f7f8fa;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
 }
+
+/* Шапка */
 
 .top {
   height: 76px;
-  background: rgba(255,255,255,.96);
+  background: rgba(255,255,255,.97);
   border-bottom: 1px solid var(--line);
-  box-shadow: 0 3px 18px rgba(25,55,45,.04);
+  box-shadow: 0 3px 18px rgba(24,36,60,.04);
 }
 
 .brand {
@@ -515,6 +518,8 @@ body {
 .brand span {
   color: var(--blue);
 }
+
+/* Кнопки */
 
 .btn {
   border-radius: 13px;
@@ -528,42 +533,43 @@ body {
 
 .primary {
   background: var(--blue);
-  box-shadow: 0 5px 14px rgba(21,155,131,.18);
+  box-shadow: 0 5px 14px rgba(37,99,235,.16);
 }
 
 .primary:hover {
-  background: #10836f;
+  background: #1d4ed8;
 }
 
 .light {
-  background: #edf3f0;
+  background: #f0f2f6;
   color: var(--ink);
 }
 
 .light:hover {
-  background: #e2ece7;
+  background: #e5e8ef;
 }
+
+/* Главная страница */
 
 .hero {
   border: 1px solid var(--line);
   border-radius: 26px;
-  box-shadow: 0 8px 30px rgba(25,55,45,.04);
+  box-shadow: 0 8px 30px rgba(24,36,60,.04);
 }
 
-.eyebrow {
-  color: var(--blue);
-}
-
+.eyebrow,
 .hero h1 span {
   color: var(--blue);
 }
+
+/* Поиск и поля */
 
 .searchbar input,
 .searchbar select,
 input,
 textarea,
 select {
-  border: 1px solid #dfe8e3;
+  border: 1px solid var(--line);
   border-radius: 13px;
   transition: border-color .2s, box-shadow .2s;
 }
@@ -575,8 +581,10 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(21,155,131,.10);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.10);
 }
+
+/* Заголовки */
 
 .section-head {
   margin-bottom: 22px;
@@ -587,6 +595,8 @@ select:focus {
   letter-spacing: -.6px;
 }
 
+/* Карточки объявлений */
+
 .grid {
   gap: 20px;
 }
@@ -594,17 +604,17 @@ select:focus {
 .item {
   border: 1px solid var(--line);
   border-radius: 19px;
-  box-shadow: 0 3px 12px rgba(25,55,45,.035);
+  box-shadow: 0 3px 12px rgba(24,36,60,.035);
   transition: transform .22s, box-shadow .22s;
 }
 
 .item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(25,55,45,.10);
+  box-shadow: 0 12px 28px rgba(24,36,60,.10);
 }
 
 .photo {
-  background: #edf3f0;
+  background: #eef1f6;
 }
 
 .item-body {
@@ -612,7 +622,7 @@ select:focus {
 }
 
 .price {
-  color: #159b83;
+  color: var(--blue);
   font-size: 21px;
   letter-spacing: -.4px;
 }
@@ -623,7 +633,7 @@ select:focus {
 }
 
 .meta {
-  color: #82908b;
+  color: var(--muted);
 }
 
 .empty {
@@ -631,9 +641,11 @@ select:focus {
   background: #fff;
 }
 
+/* Модальные окна и страницы */
+
 .dialog {
   border-radius: 22px;
-  box-shadow: 0 24px 80px rgba(15,35,30,.20);
+  box-shadow: 0 24px 80px rgba(15,25,45,.20);
 }
 
 .profile-card,
@@ -641,13 +653,15 @@ select:focus {
 .listing-seller-card {
   border: 1px solid var(--line);
   border-radius: 20px;
-  box-shadow: 0 5px 22px rgba(25,55,45,.045);
+  box-shadow: 0 5px 22px rgba(24,36,60,.045);
 }
 
 #userProfilePage,
 #listingPage {
   background: var(--bg);
 }
+
+/* Иконки */
 
 .icon-btn {
   border-color: var(--line);
@@ -656,16 +670,20 @@ select:focus {
 }
 
 .icon-btn:hover {
-  background: #eaf5f1;
+  background: #edf2ff;
   color: var(--blue);
 }
+
+/* Меню */
 
 .account-menu {
   border-radius: 16px;
 }
 
+/* Подвал */
+
 footer {
-  color: #87938f;
+  color: var(--muted);
 }
 
 /* Мобильный дизайн */
@@ -703,4 +721,3 @@ footer {
     font-size: 21px;
   }
 }
-
