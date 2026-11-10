@@ -66,16 +66,22 @@ async function toggleFavorite(id) {
 }
   
  
+
 function render() {
   const q = $('search').value.trim().toLowerCase();
   const cat = $('category').value;
   const sort = $('sort').value;
 
+  const minPrice = Number($('minPrice').value) || 0;
+  const maxPrice = Number($('maxPrice').value) || Infinity;
+
   let rows = listings.filter(x =>
     x.status === 'approved' &&
     (!showingFavorites || favorites.has(String(x.id))) &&
     (!cat || x.category === cat) &&
-    (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q))
+    (!q || (x.title + ' ' + (x.description || '')).toLowerCase().includes(q)) &&
+    Number(x.price) >= minPrice &&
+    Number(x.price) <= maxPrice
   );
 
   if (sort === 'cheap') rows.sort((a,b) => a.price-b.price);
@@ -102,7 +108,7 @@ function render() {
         <div class="meta">${esc(x.category)} · Оренбург</div>
       </div>
     </article>
-  `).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений пока нет. Будь первым — размести своё!'}</div>`;
+  `).join('') : `<div class="empty">${showingFavorites ? 'В избранном пока пусто ❤️ Добавь объявления, нажав на сердечко.' : 'Объявлений по заданным фильтрам не найдено.'}</div>`;
 
   $('grid').querySelectorAll('.favorite-btn').forEach(button => {
     button.addEventListener('click', async e => {
