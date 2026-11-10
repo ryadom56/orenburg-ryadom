@@ -771,6 +771,35 @@ $('profileBack')?.addEventListener('click', () => {
   document.querySelector('main.wrap').style.display = '';
 });
 
+  // Открытие страницы модерации
+
+$('moderationOpen')?.addEventListener('click', async () => {
+  if (!user) return;
+
+  const { data: isAdmin, error } = await db.rpc('is_listing_admin');
+
+  if (error || isAdmin !== true) {
+    alert('У тебя нет доступа к модерации.');
+    return;
+  }
+
+  $('accountMenu').style.display = 'none';
+  document.querySelector('main.wrap').style.display = 'none';
+  $('userProfilePage').style.display = 'none';
+  $('messagesPage').style.display = 'none';
+  $('listingPage').style.display = 'none';
+  $('moderationPage').style.display = '';
+
+  await loadModeration();
+});
+
+// Возврат из модерации
+
+$('moderationBack')?.addEventListener('click', () => {
+  $('moderationPage').style.display = 'none';
+  document.querySelector('main.wrap').style.display = '';
+  load();
+});
 
 $('messagesOpen').addEventListener('click', async () => {
   await syncUser();
