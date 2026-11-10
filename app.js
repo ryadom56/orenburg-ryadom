@@ -815,6 +815,9 @@ $('profileBack')?.addEventListener('click', () => {
 
 // Загрузка объявлений на модерацию
 
+
+// Загрузка объявлений на модерацию
+
 async function loadModeration() {
   const content = $('moderationContent');
 
@@ -878,7 +881,11 @@ async function loadModeration() {
             ✓ Одобрить
           </button>
 
-          <button class="btn light" type="button" data-reject="${esc(item.id)}">
+          <button class="btn light" type="button" data-revision="${esc(item.id)}">
+            📝 Отправить на доработку
+          </button>
+
+          <button class="btn danger" type="button" data-reject="${esc(item.id)}">
             ✕ Отклонить
           </button>
         </div>
@@ -886,37 +893,70 @@ async function loadModeration() {
     `;
   }).join('');
 
+  async function moderateListing(id, status, reason = null) {
+    const { error } = await db
+      .from('listings')
+      .update({
+        status,
+        moderation_note: reason,
+        moderated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .eq('status', 'pending');
+
+    if (error) {
+      alert('Ошибка модерации: ' + error.message);
+      return false;
+    }
+
+    await loadModeration();
+    await load();
+
+    return true;
+  }
+
+  // Одобрение объявления
+
   content.querySelectorAll('[data-approve]').forEach(button => {
     button.addEventListener('click', async () => {
-      const id = button.dataset.approve;
-
       button.disabled = true;
 
-      const { error } = await db
-        .from('listings')
-        .update({
-          status: 'approved',
-          moderation_note: null,
-          moderated_at: new Date().toISOString()
-        })
-        .eq('id', id)
-        .eq('status', 'pending');
-
-      if (error) {
-        alert('Не удалось одобрить объявление: ' + error.message);
-        button.disabled = false;
-        return;
-      }
-
-      await loadModeration();
-      await load();
+      await moderateListing(
+        button.dataset.approve,
+        'approved'
+      );
     });
   });
 
+  // Отправка на доработку
+
+  content.querySelectorAll('[data-revision]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const reason = prompt(
+        'Что продавцу нужно исправить? Укажи комментарий:'
+      );
+
+      if (reason === null) return;
+
+      if (!reason.trim()) {
+        alert('Нужно обязательно указать, что исправить.');
+        return;
+      }
+
+      button.disabled = true;
+
+      await moderateListing(
+        button.dataset.revision,
+        'revision_requested',
+        reason.trim()
+      );
+    });
+  });
+
+  // Отклонение объявления
+
   content.querySelectorAll('[data-reject]').forEach(button => {
     button.addEventListener('click', async () => {
-      const id = button.dataset.reject;
-
       const reason = prompt(
         'Укажи причину отклонения объявления:'
       );
@@ -924,33 +964,21 @@ async function loadModeration() {
       if (reason === null) return;
 
       if (!reason.trim()) {
-        alert('Нужно указать причину отклонения.');
+        alert('Нужно обязательно указать причину отклонения.');
         return;
       }
 
       button.disabled = true;
 
-      const { error } = await db
-        .from('listings')
-        .update({
-          status: 'rejected',
-          moderation_note: reason.trim(),
-          moderated_at: new Date().toISOString()
-        })
-        .eq('id', id)
-        .eq('status', 'pending');
-
-      if (error) {
-        alert('Не удалось отклонить объявление: ' + error.message);
-        button.disabled = false;
-        return;
-      }
-
-      await loadModeration();
-      await load();
+      await moderateListing(
+        button.dataset.reject,
+        'rejected',
+        reason.trim()
+      );
     });
   });
 }
+
   
   // Открытие страницы модерации
 
