@@ -7,6 +7,8 @@
   // Колонки для списка объявлений. Тяжёлые поля (photo_urls, video_url, contact) грузятся только на странице объявления
   const LIST_COLS = 'id,title,price,category,description,photo_url,created_at,status,user_id';
   const LIST_LIMIT = 100;
+  // Колонки профиля, доступные гостям. Контакты (телефон, Telegram и т. д.) видны только вошедшим пользователям
+  const PUBLIC_PROFILE_COLS = 'id,display_name,avatar_url,about,cover_url,background_url';
 
   $('year').textContent = new Date().getFullYear();
   const rub = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
@@ -1808,7 +1810,7 @@
 
     const { data: profileData, error } = await db
       .from('profiles')
-      .select('*')
+      .select(user ? '*' : PUBLIC_PROFILE_COLS)
       .eq('id', userId)
       .maybeSingle();
 
@@ -1924,6 +1926,14 @@
         </div>
       </div>
     `;
+
+    // Гостям вместо контактов показываем приглашение войти
+    if (!user) {
+      const contactsBox = content.querySelector('.profile-contacts');
+      if (contactsBox) {
+        contactsBox.innerHTML = '<p>Войдите в аккаунт, чтобы увидеть контакты продавца.</p>';
+      }
+    }
 
     const cover = content.querySelector('.profile-cover');
     if (cover && profileData.cover_url) {
