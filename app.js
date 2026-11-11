@@ -1185,10 +1185,230 @@
 
   // Загрузка объявлений на модерацию
 
+  const REPORT_REASONS = {
+    scam: 'Мошенничество или обман',
+    prohibited: 'Запрещённый товар или услуга',
+    duplicate: 'Дубликат или спам',
+    wrong_category: 'Неверная категория или цена',
+    other: 'Другое'
+  };
+
+  // Диалог жалобы на объявление
+  function openReportDialog(listingId) {
+    document.getElementById('reportModal')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'reportModal';
+    modal.className = 'modal open';
+
+    modal.innerHTML = `
+      <form class="dialog" id="reportForm">
+        <button type="button" class="x" id="reportClose">&times;</button>
+        <h2>Пожаловаться на объявление</h2>
+
+        <label>
+          Причина
+          <select id="reportReason" required>
+            <option value="">Выбери причину</option>
+            ${Object.entries(REPORT_REASONS).map(([key, label]) =>
+              `<option value="${key}">${esc(label)}</option>`).join('')}
+          </select>
+        </label>
+
+        <label>
+          Подробности (необязательно)
+          <textarea id="reportDetails" maxlength="500" placeholder="Что именно не так?"></textarea>
+        </label>
+
+        <button type="submit" class="btn primary full">Отправить жалобу</button>
+        <p id="reportMessage" class="message"></p>
+      </form>
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeReport = () => modal.remove();
+    modal.querySelector('#reportClose').addEventListener('click', closeReport);
+    modal.addEventListener('click', e => { if (e.target === modal) closeReport(); });
+
+    modal.querySelector('#reportForm').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const msg = modal.querySelector('#reportMessage');
+      const button = modal.querySelector('[type="submit"]');
+      const reason = modal.querySelector('#reportReason').value;
+      const details = modal.querySelector('#reportDetails').value.trim();
+
+      if (!reason) {
+        msg.textContent = 'Выбери причину жалобы.';
+        return;
+      }
+
+      button.disabled = true;
+      msg.textContent = 'Отправляем...';
+
+      const { error } = await db.from('listing_reports').insert({
+        listing_id: listingId,
+        reporter_id: user.id,
+        reason,
+        details: details || null
+      });
+
+      if (error) {
+        msg.textContent = error.code === '23505'
+          ? 'Ты уже отправлял жалобу на это объявление.'
+          : error.message;
+        button.disabled = false;
+        return;
+      }
+
+      closeReport();
+      alert('Спасибо! Жалоба отправлена модераторам.');
+    });
+  }
+
+  // Открытые жалобы по списку объявлений: Map(id объявления → жалобы)
+  async function fetchOpenReports(ids) {
+    const map = new Map();
+    if (!ids.length) return map;
+
+    const { data } = await db
+      .from('listing_reports')
+      .select('listing_id,reason,details')
+      .in('listing_id', ids)
+      .is('resolved_at', null);
+
+    for (const r of data || []) {
+      const key = String(r.listing_id);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(r);
+    }
+
+    return map;
+  }
+
+  const reportList = reps => `<ul style="margin:6px 0 0;padding-left:18px">${reps.map(r =>
+    `<li>${esc(REPORT_REASONS[r.reason] || r.reason)}${r.details ? ': ' + esc(r.details) : ''}</li>`
+  ).join('')}</ul>`;
+
+  const reportBadge = reps => !reps || !reps.length ? '' : `
+    <div style="margin:10px 0;padding:10px 12px;border-radius:8px;background:#fef2f2;color:#b91c1c">
+      <b>⚠ Жалоб: ${reps.length}</b>
+      ${reportList(reps)}
+    </div>`;
+
+  // Жалобы на уже опубликованные объявления (объявления, скрытые по жалобам, идут в общей очереди)
+  async function loadReports() {
+    const box = $('reportsContent');
+    if (!box) return;
+
+    const { data, error } = await db
+      .from('listing_reports')
+      .select('id,listing_id,reason,details,created_at,listings(id,title,price,status)')
+      .is('resolved_at', null)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      box.innerHTML = `<p class="message">Не удалось загрузить жалобы: ${esc(error.message)}</p>`;
+      return;
+    }
+
+    const groups = new Map();
+
+    for (const r of data || []) {
+      if (!r.listings || r.listings.status !== 'approved') continue;
+      const key = String(r.listing_id);
+      if (!groups.has(key)) groups.set(key, { listing: r.listings, items: [] });
+      groups.get(key).items.push(r);
+    }
+
+    if (!groups.size) {
+      box.innerHTML = '';
+      return;
+    }
+
+    box.innerHTML = `<h2 style="margin-top:40px">Жалобы на опубликованные объявления</h2>` +
+      [...groups.values()].map(g => `
+        <article class="profile-card" style="margin:20px 0;padding:20px">
+          <h3>${esc(g.listing.title)}</h3>
+          <p><b>Цена:</b> ${rub(g.listing.price)}</p>
+          <p><b>Жалоб:</b> ${g.items.length}</p>
+          ${reportList(g.items)}
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+            <button class="btn light" type="button" data-report-open="${esc(g.listing.id)}">Посмотреть объявление</button>
+            <button class="btn primary" type="button" data-report-dismiss="${esc(g.listing.id)}">Жалобы необоснованны</button>
+            <button class="btn danger" type="button" data-report-remove="${esc(g.listing.id)}">Снять с публикации</button>
+          </div>
+        </article>
+      `).join('');
+
+    box.querySelectorAll('[data-report-open]').forEach(button => {
+      button.addEventListener('click', () => {
+        $('moderationPage').style.display = 'none';
+        showDetail(button.dataset.reportOpen);
+      });
+    });
+
+    box.querySelectorAll('[data-report-dismiss]').forEach(button => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+
+        const { error: dismissError } = await db
+          .from('listing_reports')
+          .update({ resolved_at: new Date().toISOString() })
+          .eq('listing_id', button.dataset.reportDismiss)
+          .is('resolved_at', null);
+
+        if (dismissError) {
+          alert('Ошибка: ' + dismissError.message);
+          button.disabled = false;
+          return;
+        }
+
+        await loadReports();
+      });
+    });
+
+    box.querySelectorAll('[data-report-remove]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const reason = prompt('Укажи причину снятия с публикации (её увидит продавец):');
+
+        if (reason === null) return;
+
+        if (!reason.trim()) {
+          alert('Нужно указать причину.');
+          return;
+        }
+
+        button.disabled = true;
+
+        const { error: removeError } = await db
+          .from('listings')
+          .update({
+            status: 'rejected',
+            moderation_note: reason.trim(),
+            moderated_at: new Date().toISOString()
+          })
+          .eq('id', button.dataset.reportRemove);
+
+        if (removeError) {
+          alert('Ошибка: ' + removeError.message);
+          button.disabled = false;
+          return;
+        }
+
+        await loadReports();
+        await load();
+      });
+    });
+  }
+
   async function loadModeration() {
     const content = $('moderationContent');
 
     content.innerHTML = '<p>Загружаем объявления...</p>';
+    loadReports();
 
     const { data, error } = await db
       .from('listings')
@@ -1208,6 +1428,8 @@
       return;
     }
 
+    const pendingReports = await fetchOpenReports(rows.map(r => r.id));
+
     content.innerHTML = rows.map(item => {
       const photos = Array.isArray(item.photo_urls) && item.photo_urls.length
         ? item.photo_urls
@@ -1217,6 +1439,7 @@
         <article class="profile-card" style="margin:20px 0;padding:20px">
           <h3>${esc(item.title)}</h3>
 
+          ${reportBadge(pendingReports.get(String(item.id)))}
           <p><b>Цена:</b> ${rub(item.price)}</p>
           <p><b>Категория:</b> ${esc(item.category || '')}</p>
           <p><b>Описание:</b> ${esc(item.description || '')}</p>
@@ -2393,6 +2616,12 @@
                 🔗 Копировать ссылку
               </button>
 
+              ${!user || user.id !== x.user_id ? `
+                <button type="button" id="reportListing" class="btn light">
+                  ⚑ Пожаловаться
+                </button>
+              ` : ''}
+
               ${user && user.id === x.user_id ? `
                 <button type="button" id="deleteListing" class="btn danger">
                   Удалить объявление
@@ -2544,6 +2773,24 @@
     }
 
     // Удаление объявления
+
+    // Жалоба на объявление
+
+    const reportButton = $('reportListing');
+
+    if (reportButton) {
+      reportButton.addEventListener('click', async () => {
+        await syncUser();
+
+        if (!user) {
+          alert('Войди в аккаунт, чтобы пожаловаться на объявление.');
+          open('authModal');
+          return;
+        }
+
+        openReportDialog(x.id);
+      });
+    }
 
     const deleteButton = $('deleteListing');
 
