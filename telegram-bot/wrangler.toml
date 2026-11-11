@@ -1,0 +1,6 @@
+name = "orenburg-moderation-bot"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+# Все настройки (токены, ключи, ID админов) задаются в панели Cloudflare как Secret,
+# см. README.md. В этот файл секреты писать нельзя: он лежит в публичном репозитории.
