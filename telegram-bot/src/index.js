@@ -306,12 +306,13 @@ export default {
           return new Response('forbidden', { status: 403 });
         }
         const update = await request.json();
+        console.log('Telegram update:', Object.keys(update).join(','), update.callback_query?.data || '');
         if (update.callback_query) await onCallback(update.callback_query, env);
         else if (update.message) await onMessage(update.message, env);
         return new Response('ok');
       }
 
-      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает');
+      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает (версия 3)');
     } catch (error) {
       // Отвечаем 200, чтобы Telegram не засыпал повторными запросами; ошибка попадёт в логи
       console.error('Ошибка обработчика:', error);
