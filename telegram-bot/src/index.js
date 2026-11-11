@@ -71,7 +71,7 @@ async function updateListing(env, id, fields, onlyStatus) {
     headers: { prefer: 'return=representation' },
     body: JSON.stringify({ ...fields, moderated_at: new Date().toISOString() })
   });
-  return rows || [];
+  return rows; // null — ошибка обращения к базе, [] — объявление не найдено или уже обработано
 }
 
 const openReports = (env, id) =>
@@ -174,6 +174,8 @@ async function notifyReport(r, env) {
 
 // ---------- Действия админа в Telegram ----------
 
+const DB_ERROR = 'Не удалось обратиться к базе. Проверьте SUPABASE_URL и SUPABASE_SERVICE_KEY в Cloudflare (смотрите журнал).';
+
 const PROMPTS = {
   r: 'Причина отклонения (ответьте на это сообщение, её увидит продавец):',
   v: 'Что продавцу нужно исправить? (ответьте на это сообщение):',
@@ -181,6 +183,19 @@ const PROMPTS = {
 };
 
 async function onCallback(cb, env) {
+  try {
+    await handleCallback(cb, env);
+  } catch (error) {
+    console.error('Ошибка кнопки:', error);
+    await tg(env, 'answerCallbackQuery', {
+      callback_query_id: cb.id,
+      text: 'Ошибка: ' + cut(error?.message || error, 150),
+      show_alert: true
+    });
+  }
+}
+
+async function handleCallback(cb, env) {
   if (!isAdmin(env, cb.from?.id)) {
     await tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: 'Нет доступа', show_alert: true });
     return;
@@ -199,6 +214,7 @@ async function onCallback(cb, env) {
 
   if (action === 'a') {
     const rows = await updateListing(env, id, { status: 'approved', moderation_note: null }, 'pending');
+    if (rows === null) return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: DB_ERROR, show_alert: true });
     if (rows.length) return finish('✅ Одобрено');
     return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: 'Уже обработано или не найдено', show_alert: true });
   }
@@ -258,7 +274,9 @@ async function onMessage(msg, env) {
   await tg(env, 'sendMessage', {
     chat_id,
     reply_to_message_id: msg.message_id,
-    text: rows.length ? `${result.done}: ${cut(rows[0].title, 80)}` : 'Уже обработано или не найдено.'
+    text: rows === null
+      ? DB_ERROR
+      : rows.length ? `${result.done}: ${cut(rows[0].title, 80)}` : 'Уже обработано или не найдено.'
   });
 }
 
@@ -270,9 +288,15 @@ export default {
 
     try {
       if (request.method === 'POST' && url.pathname === '/supabase') {
-        if (!safeEqual(request.headers.get('x-webhook-secret') || '', env.SUPABASE_WEBHOOK_SECRET || '')) {
-          return new Response('forbidden', { status: 403 });
-        }
+        // Секрет принимаем в заголовке x-webhook-secret или в адресе (?secret=...), как удобнее настроить в Supabase.
+        // Текст отказа показывает причину (виден в Supabase в net._http_response), сам секрет не раскрывается.
+        const expected = env.SUPABASE_WEBHOOK_SECRET || '';
+        const given = request.headers.get('x-webhook-secret') || url.searchParams.get('secret') || '';
+
+        if (!expected) return new Response('forbidden: SUPABASE_WEBHOOK_SECRET не задан в Cloudflare', { status: 403 });
+        if (!given) return new Response('forbidden: секрет не пришёл в запросе', { status: 403 });
+        if (!safeEqual(given, expected)) return new Response('forbidden: секрет не совпадает', { status: 403 });
+
         await onSupabase(await request.json(), env);
         return new Response('ok');
       }
