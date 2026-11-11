@@ -201,6 +201,11 @@ async function notifyReport(r, env) {
 
 // ---------- Действия админа в Telegram ----------
 
+const TRIGGER_ERROR = 'База вернула старый статус: триггер защиты откатил изменение. Выполните файл bot.sql в Supabase → SQL Editor (целиком) и повторите.';
+
+// Если база вернула не тот статус, который мы ставили, значит, изменение откатил триггер
+const statusMismatch = (rows, expected) => rows.length && rows[0].status !== expected;
+
 const DB_ERROR = 'Не удалось обратиться к базе. Проверьте SUPABASE_URL и SUPABASE_SERVICE_KEY в Cloudflare (смотрите журнал).';
 
 const PROMPTS = {
@@ -242,6 +247,7 @@ async function handleCallback(cb, env) {
   if (action === 'a') {
     const rows = await updateListing(env, id, { status: 'approved', moderation_note: null }, 'pending');
     if (rows === null) return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: DB_ERROR, show_alert: true });
+    if (statusMismatch(rows, 'approved')) return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: TRIGGER_ERROR, show_alert: true });
     if (rows.length) return finish('✅ Одобрено');
     return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: keyProblem(env) || 'Уже обработано или не найдено', show_alert: true });
   }
@@ -303,6 +309,7 @@ async function onMessage(msg, env) {
     reply_to_message_id: msg.message_id,
     text: rows === null
       ? DB_ERROR
+      : statusMismatch(rows, result.fields.status) ? TRIGGER_ERROR
       : rows.length ? `${result.done}: ${cut(rows[0].title, 80)}` : (keyProblem(env) || 'Уже обработано или не найдено.')
   });
 }
@@ -339,7 +346,7 @@ export default {
         return new Response('ok');
       }
 
-      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает (версия 4)');
+      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает (версия 5)');
     } catch (error) {
       // Отвечаем 200, чтобы Telegram не засыпал повторными запросами; ошибка попадёт в логи
       console.error('Ошибка обработчика:', error);
