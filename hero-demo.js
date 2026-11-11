@@ -1,3 +1,4 @@
+
 (function () {
   var root = document.getElementById("heroDemo");
   if (!root) return;
@@ -42,11 +43,9 @@
     }
   ];
 
-  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   var wait = function (ms) {
-    return new Promise(function (r) {
-      setTimeout(r, ms);
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
     });
   };
 
@@ -61,21 +60,11 @@
   }
 
   async function run() {
-    if (still) {
-      var f = items[0];
-      q.textContent = f.q;
-      fill(f);
-      parts.forEach(function (e) {
-        e.classList.add("show");
-      });
-      return;
-    }
-
     for (var n = 0; ; n = (n + 1) % items.length) {
       var it = items[n];
 
-      parts.forEach(function (e) {
-        e.classList.remove("show");
+      parts.forEach(function (el) {
+        el.classList.remove("show");
       });
 
       q.textContent = "";
