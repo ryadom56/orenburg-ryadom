@@ -1,3 +1,0 @@
-name = "orenburg-moderation-bot"
-main = "src/index.js"
-compatibility_date = "2025-06-01"
