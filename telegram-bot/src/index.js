@@ -44,16 +44,43 @@ async function tg(env, method, body) {
   return data;
 }
 
-async function sb(env, path, options = {}) {
-  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      apikey: env.SUPABASE_SERVICE_KEY,
-      authorization: `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-      'content-type': 'application/json',
-      ...(options.headers || {})
+const supabaseKey = env => String(env.SUPABASE_SERVICE_KEY || '').trim();
+const supabaseUrl = env => String(env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+
+// Проверка, что в SUPABASE_SERVICE_KEY лежит именно серверный ключ, а не публичный.
+// С публичным ключом база не показывает боту скрытые объявления, и кнопки отвечают «не найдено».
+function keyProblem(env) {
+  const key = supabaseKey(env);
+  if (!key) return 'Секрет SUPABASE_SERVICE_KEY пустой.';
+  if (key.startsWith('sb_publishable_')) {
+    return 'В SUPABASE_SERVICE_KEY вставлен публичный ключ (publishable). Нужен секретный: sb_secret_… или service_role.';
+  }
+  if (key.startsWith('sb_secret_')) return null;
+
+  try {
+    const payload = JSON.parse(atob(key.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (payload.role !== 'service_role') {
+      return `В SUPABASE_SERVICE_KEY ключ с ролью «${payload.role}», а нужна service_role.`;
     }
-  });
+  } catch {
+    return 'SUPABASE_SERVICE_KEY не похож на ключ Supabase. Проверьте, что скопировали его целиком.';
+  }
+
+  return null;
+}
+
+async function sb(env, path, options = {}) {
+  const key = supabaseKey(env);
+  const headers = {
+    apikey: key,
+    'content-type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  // Новые ключи sb_secret_… — не JWT, их передаём только в apikey
+  if (!key.startsWith('sb_')) headers.authorization = `Bearer ${key}`;
+
+  const res = await fetch(`${supabaseUrl(env)}/rest/v1/${path}`, { ...options, headers });
   if (!res.ok) {
     console.error('Supabase error', path, res.status, await res.text());
     return null;
@@ -216,7 +243,7 @@ async function handleCallback(cb, env) {
     const rows = await updateListing(env, id, { status: 'approved', moderation_note: null }, 'pending');
     if (rows === null) return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: DB_ERROR, show_alert: true });
     if (rows.length) return finish('✅ Одобрено');
-    return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: 'Уже обработано или не найдено', show_alert: true });
+    return tg(env, 'answerCallbackQuery', { callback_query_id: cb.id, text: keyProblem(env) || 'Уже обработано или не найдено', show_alert: true });
   }
 
   if (action === 'd') {
@@ -276,7 +303,7 @@ async function onMessage(msg, env) {
     reply_to_message_id: msg.message_id,
     text: rows === null
       ? DB_ERROR
-      : rows.length ? `${result.done}: ${cut(rows[0].title, 80)}` : 'Уже обработано или не найдено.'
+      : rows.length ? `${result.done}: ${cut(rows[0].title, 80)}` : (keyProblem(env) || 'Уже обработано или не найдено.')
   });
 }
 
@@ -312,7 +339,7 @@ export default {
         return new Response('ok');
       }
 
-      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает (версия 3)');
+      if (request.method === 'GET' && url.pathname === '/') return new Response('Бот модерации работает (версия 4)');
     } catch (error) {
       // Отвечаем 200, чтобы Telegram не засыпал повторными запросами; ошибка попадёт в логи
       console.error('Ошибка обработчика:', error);
