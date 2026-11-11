@@ -550,34 +550,6 @@ $('listingPage').style.display = 'none';
 document.getElementById('userProfilePage').style.display = 'block';
 document.querySelector('main.wrap').style.display = 'none';
 
-    if (oldPath) {
-      const { error: removeError } = await db.storage
-        .from('avatars')
-        .remove([oldPath]);
-
-      if (removeError) {
-        alert('Ошибка удаления фото: ' + removeError.message);
-        deleteAvatarButton.disabled = false;
-        return;
-      }
-    }
-
-    const { error } = await db
-      .from('profiles')
-      .update({ avatar_url: null })
-      .eq('id', user.id);
-
-    if (error) {
-      alert('Ошибка обновления профиля: ' + error.message);
-      deleteAvatarButton.disabled = false;
-      return;
-    }
-
-    $('userProfilePage').style.display = 'none';
-document.querySelector('main.wrap').style.display = '';
-    await openProfile();
-  });
-}
     
     const editButton = document.getElementById('editProfileOpen');
 
